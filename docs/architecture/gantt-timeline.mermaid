@@ -1,0 +1,81 @@
+gantt
+    title Lumos AI Work Assistant - Implementation Timeline
+    dateFormat YYYY-MM-DD
+    excludes weekends
+
+    section M1: Foundation
+    T-1.1.1 Project Setup & Tooling       :m1_1, 2026-02-03, 1d
+    T-1.1.4 Type Definitions & Models     :m1_4, 2026-02-03, 1d
+    T-1.1.2 Database Schema & Migrations  :m1_2, after m1_1, 1d
+    T-1.2.1 Electron Main Process Setup   :m1_5, after m1_4, 1d
+    T-1.2.2 React Renderer Setup          :m1_6, after m1_4, 1d
+    T-1.1.3 Storage Layer Implementation  :m1_3, after m1_2, 1d
+    T-1.2.3 IPC Bridge Implementation     :m1_7, after m1_5 m1_6, 1d
+    M1 Checkpoint                         :milestone, m1_done, after m1_3 m1_7, 0d
+
+    section M2: Input
+    T-2.1.1 Fast Path Service             :m2_1, after m1_done, 1d
+    T-2.2.1 Swift Helper Scaffold         :m2_4, after m1_done, 1d
+    T-2.1.2 Input Handler Service         :m2_2, after m2_1, 1d
+    T-2.2.2 FluidAudio Integration        :m2_5, after m2_4, 2d
+    T-2.2.3 Swift-Electron IPC Bridge     :m2_6, after m2_2 m2_5, 2d
+    M2 Checkpoint                         :milestone, m2_done, after m2_6, 0d
+
+    section M3: AI Services
+    T-3.1.1 Ollama Client                 :m3_1, after m1_done, 1d
+    T-3.2.1 AI Provider Interface         :m3_4, after m1_done, 1d
+    T-3.1.2 Evaluation LLM Service        :m3_2, after m3_1, 2d
+    T-3.2.2 Expert AI Service             :m3_5, after m3_4, 2d
+    T-3.1.3 Constrained JSON Decoding     :crit, m3_3, after m3_2, 2d
+    T-3.2.3 Cloud Provider Clients        :m3_6, after m3_5, 2d
+    M3 Checkpoint                         :milestone, m3_done, after m3_3 m3_6, 0d
+
+    section M4: Governance (Critical)
+    T-4.1.1 Skill Registry                :crit, m4_1, after m1_done, 2d
+    T-4.2.1 Trust Level State Machine     :crit, m4_4, after m1_done, 2d
+    T-4.1.2 Constraint Evaluator          :crit, m4_2, after m4_1, 2d
+    T-4.2.2 Trust Management Service      :crit, m4_5, after m4_4, 2d
+    T-4.1.3 Policy Engine Core            :crit, m4_3, after m4_2, 2d
+    T-4.2.3 Attestation System            :m4_6, after m4_5, 1d
+    M4 Checkpoint                         :milestone, m4_done, after m4_3 m4_6, 0d
+
+    section M5: Execution
+    T-5.1.1 MCP Client Implementation     :m5_1, after m2_done m3_done m4_done, 1d
+    T-5.2.2 Audit Service                 :m5_5, after m2_done m3_done m4_done, 2d
+    T-5.1.2 MCP Server Registry           :m5_2, after m5_1, 1d
+    T-5.2.1 Rollback Manager              :m5_4, after m5_5, 2d
+    T-5.1.3 Execution Layer               :m5_3, after m5_2, 2d
+    T-5.2.3 Audit Export                  :m5_6, after m5_4, 1d
+    M5 Checkpoint                         :milestone, m5_done, after m5_3 m5_6, 0d
+
+    section M6: UI
+    T-6.1.1 Navigation & Layout           :m6_1, after m1_done, 1d
+    T-6.1.2 Chat View Components          :m6_2, after m6_1, 2d
+    T-6.2.1 Activity View                 :m6_4, after m6_1, 1d
+    T-6.2.2 Permissions View              :m6_5, after m6_1, 1d
+    T-6.2.3 Skills View                   :m6_6, after m6_1, 1d
+    T-6.2.4 Settings View                 :m6_7, after m6_1, 1d
+    T-6.1.3 Proposal Card                 :m6_3, after m6_2 m5_done, 1d
+    T-6.3.1 Accessibility Implementation  :m6_8, after m6_3 m6_4 m6_5, 1d
+    T-6.3.2 Keyboard Shortcuts            :m6_9, after m6_8, 1d
+    M6 Checkpoint                         :milestone, m6_done, after m6_9, 0d
+
+    section M7: Testing
+    T-7.1.1 End-to-End Pipeline           :m7_1, after m5_done m6_done, 2d
+    T-7.2.1 Unit Tests                    :m7_4, after m5_done m6_done, 1d
+    T-7.1.2 MCP Calendar Integration      :m7_2, after m7_1, 1d
+    T-7.1.3 MCP Filesystem Integration    :m7_3, after m7_1, 1d
+    T-7.2.2 Integration Tests             :m7_5, after m7_4, 1d
+    T-7.2.3 E2E Tests                     :m7_6, after m7_2 m7_3 m7_5, 1d
+    T-7.3.1 Security Testing              :m7_7, after m7_6, 1d
+    T-7.3.2 Performance Testing           :m7_8, after m7_6, 1d
+    M7 Checkpoint                         :milestone, m7_done, after m7_7 m7_8, 0d
+
+    section M8: Release
+    T-8.1.1 macOS Build Config            :m8_1, after m7_done, 1d
+    T-8.2.1 Builtin Skills Packaging      :m8_4, after m7_done, 1d
+    T-8.1.2 Code Signing & Notarization   :m8_2, after m8_1, 1d
+    T-8.2.2 Default Policies              :m8_5, after m8_4, 1d
+    T-8.1.3 Auto-Update Setup             :m8_3, after m8_2, 1d
+    T-8.2.3 Documentation & Help          :m8_6, after m8_5, 1d
+    M8 Checkpoint & Release               :milestone, release, after m8_3 m8_6, 0d

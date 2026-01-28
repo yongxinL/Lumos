@@ -1,0 +1,162 @@
+%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#4A90D9', 'primaryTextColor': '#fff', 'primaryBorderColor': '#2E5A8A', 'lineColor': '#5D6D7E', 'secondaryColor': '#82E0AA', 'tertiaryColor': '#F9E79F'}}}%%
+
+flowchart TD
+    subgraph M1["M1: Foundation & Core Infrastructure"]
+        T1.1.1[T-1.1.1: Project Setup & Tooling]
+        T1.1.2[T-1.1.2: Database Schema & Migrations]
+        T1.1.3[T-1.1.3: Storage Layer Implementation]
+        T1.1.4[T-1.1.4: Type Definitions & Models]
+
+        T1.2.1[T-1.2.1: Electron Main Process Setup]
+        T1.2.2[T-1.2.2: React Renderer Setup]
+        T1.2.3[T-1.2.3: IPC Bridge Implementation]
+
+        T1.1.1 --> T1.1.2
+        T1.1.1 --> T1.1.4
+        T1.1.2 --> T1.1.3
+        T1.1.4 --> T1.2.1
+        T1.1.4 --> T1.2.2
+        T1.2.1 --> T1.2.3
+        T1.2.2 --> T1.2.3
+    end
+
+    subgraph M2["M2: Input & Classification"]
+        T2.1.1[T-2.1.1: Fast Path Service]
+        T2.1.2[T-2.1.2: Input Handler Service]
+        T2.2.1[T-2.2.1: Swift Helper Scaffold]
+        T2.2.2[T-2.2.2: FluidAudio Integration]
+        T2.2.3[T-2.2.3: Swift-Electron IPC Bridge]
+
+        T2.1.1 --> T2.1.2
+        T2.2.1 --> T2.2.2
+        T2.2.2 --> T2.2.3
+        T2.1.2 --> T2.2.3
+    end
+
+    subgraph M3["M3: AI Services"]
+        T3.1.1[T-3.1.1: Ollama Client]
+        T3.1.2[T-3.1.2: Evaluation LLM Service]
+        T3.1.3[T-3.1.3: Constrained JSON Decoding]
+        T3.2.1[T-3.2.1: AI Provider Interface]
+        T3.2.2[T-3.2.2: Expert AI Service]
+        T3.2.3[T-3.2.3: Cloud Provider Clients]
+
+        T3.1.1 --> T3.1.2
+        T3.1.2 --> T3.1.3
+        T3.2.1 --> T3.2.2
+        T3.2.2 --> T3.2.3
+    end
+
+    subgraph M4["M4: Governance Pipeline"]
+        T4.1.1[T-4.1.1: Skill Registry]
+        T4.1.2[T-4.1.2: Constraint Evaluator]
+        T4.1.3[T-4.1.3: Policy Engine Core]
+        T4.2.1[T-4.2.1: Trust Level State Machine]
+        T4.2.2[T-4.2.2: Trust Management Service]
+        T4.2.3[T-4.2.3: Attestation System]
+
+        T4.1.1 --> T4.1.2
+        T4.1.2 --> T4.1.3
+        T4.2.1 --> T4.2.2
+        T4.2.2 --> T4.2.3
+        T4.1.3 --> T4.2.2
+    end
+
+    subgraph M5["M5: Execution & Audit"]
+        T5.1.1[T-5.1.1: MCP Client Implementation]
+        T5.1.2[T-5.1.2: MCP Server Registry]
+        T5.1.3[T-5.1.3: Execution Layer]
+        T5.2.1[T-5.2.1: Rollback Manager]
+        T5.2.2[T-5.2.2: Audit Service]
+        T5.2.3[T-5.2.3: Audit Export]
+
+        T5.1.1 --> T5.1.2
+        T5.1.2 --> T5.1.3
+        T5.1.3 --> T5.2.1
+        T5.2.1 --> T5.2.2
+        T5.2.2 --> T5.2.3
+    end
+
+    subgraph M6["M6: User Interface"]
+        T6.1.1[T-6.1.1: Navigation & Layout]
+        T6.1.2[T-6.1.2: Chat View Components]
+        T6.1.3[T-6.1.3: Proposal Card]
+        T6.2.1[T-6.2.1: Activity View]
+        T6.2.2[T-6.2.2: Permissions View]
+        T6.2.3[T-6.2.3: Skills View]
+        T6.2.4[T-6.2.4: Settings View]
+        T6.3.1[T-6.3.1: Accessibility Implementation]
+        T6.3.2[T-6.3.2: Keyboard Shortcuts]
+
+        T6.1.1 --> T6.1.2
+        T6.1.2 --> T6.1.3
+        T6.1.1 --> T6.2.1
+        T6.1.1 --> T6.2.2
+        T6.1.1 --> T6.2.3
+        T6.1.1 --> T6.2.4
+        T6.1.3 --> T6.3.1
+        T6.2.1 --> T6.3.1
+        T6.2.2 --> T6.3.1
+        T6.3.1 --> T6.3.2
+    end
+
+    subgraph M7["M7: Integration & Testing"]
+        T7.1.1[T-7.1.1: End-to-End Pipeline]
+        T7.1.2[T-7.1.2: MCP Calendar Integration]
+        T7.1.3[T-7.1.3: MCP Filesystem Integration]
+        T7.2.1[T-7.2.1: Unit Tests]
+        T7.2.2[T-7.2.2: Integration Tests]
+        T7.2.3[T-7.2.3: E2E Tests]
+        T7.3.1[T-7.3.1: Security Testing]
+        T7.3.2[T-7.3.2: Performance Testing]
+
+        T7.1.1 --> T7.1.2
+        T7.1.1 --> T7.1.3
+        T7.1.2 --> T7.2.2
+        T7.1.3 --> T7.2.2
+        T7.2.1 --> T7.2.2
+        T7.2.2 --> T7.2.3
+        T7.2.3 --> T7.3.1
+        T7.2.3 --> T7.3.2
+    end
+
+    subgraph M8["M8: Packaging & Release"]
+        T8.1.1[T-8.1.1: macOS Build Config]
+        T8.1.2[T-8.1.2: Code Signing & Notarization]
+        T8.1.3[T-8.1.3: Auto-Update Setup]
+        T8.2.1[T-8.2.1: Builtin Skills Packaging]
+        T8.2.2[T-8.2.2: Default Policies]
+        T8.2.3[T-8.2.3: Documentation & Help]
+
+        T8.1.1 --> T8.1.2
+        T8.1.2 --> T8.1.3
+        T8.2.1 --> T8.2.2
+        T8.2.2 --> T8.2.3
+    end
+
+    %% Milestone Dependencies
+    M1 --> M2
+    M1 --> M3
+    M1 --> M4
+    M2 --> M5
+    M3 --> M5
+    M4 --> M5
+    M1 --> M6
+    M5 --> M6
+    M6 --> M7
+    M7 --> M8
+
+    %% Styling
+    classDef milestone fill:#4A90D9,stroke:#2E5A8A,stroke-width:2px,color:#fff
+    classDef task fill:#82E0AA,stroke:#27AE60,stroke-width:1px,color:#000
+    classDef critical fill:#F9E79F,stroke:#F39C12,stroke-width:2px,color:#000
+
+    class M1,M2,M3,M4,M5,M6,M7,M8 milestone
+    class T1.1.1,T1.1.2,T1.1.3,T1.1.4,T1.2.1,T1.2.2,T1.2.3 task
+    class T2.1.1,T2.1.2,T2.2.1,T2.2.2,T2.2.3 task
+    class T3.1.1,T3.1.2,T3.1.3,T3.2.1,T3.2.2,T3.2.3 task
+    class T4.1.1,T4.1.2,T4.1.3,T4.2.1,T4.2.2,T4.2.3 critical
+    class T5.1.1,T5.1.2,T5.1.3,T5.2.1,T5.2.2,T5.2.3 task
+    class T6.1.1,T6.1.2,T6.1.3,T6.2.1,T6.2.2,T6.2.3,T6.2.4,T6.3.1,T6.3.2 task
+    class T7.1.1,T7.1.2,T7.1.3,T7.2.1,T7.2.2,T7.2.3,T7.3.1,T7.3.2 task
+    class T8.1.1,T8.1.2,T8.1.3,T8.2.1,T8.2.2,T8.2.3 task

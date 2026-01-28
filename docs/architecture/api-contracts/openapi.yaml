@@ -1,0 +1,975 @@
+openapi: 3.1.0
+info:
+  title: Lumos Internal API
+  version: 1.0.0
+  description: |
+    Internal API contracts for Lumos AI Work Assistant.
+    These APIs are used for IPC between Electron main and renderer processes.
+
+paths:
+  # ============================================
+  # Input Handler APIs
+  # ============================================
+  /input/text:
+    post:
+      operationId: submitText
+      summary: Submit text input for processing
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [text]
+              properties:
+                text:
+                  type: string
+                  maxLength: 10000
+      responses:
+        '200':
+          description: Input processed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProcessedInput'
+        '400':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppError'
+
+  /input/recording/start:
+    post:
+      operationId: startRecording
+      summary: Start audio recording for STT
+      responses:
+        '200':
+          description: Recording started
+        '503':
+          description: STT service unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppError'
+
+  /input/recording/stop:
+    post:
+      operationId: stopRecording
+      summary: Stop recording and get transcription preview
+      responses:
+        '200':
+          description: Transcription preview ready
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TranscriptionPreview'
+
+  /input/transcription/confirm:
+    post:
+      operationId: confirmTranscription
+      summary: Confirm transcription and submit for processing
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TranscriptionPreview'
+      responses:
+        '200':
+          description: Transcription submitted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProcessedInput'
+
+  # ============================================
+  # Proposal APIs
+  # ============================================
+  /proposals/{proposalId}:
+    get:
+      operationId: getProposal
+      summary: Get proposal by ID
+      parameters:
+        - name: proposalId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Proposal found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ActionProposal'
+        '404':
+          description: Proposal not found
+
+  /proposals/{proposalId}/approve:
+    post:
+      operationId: approveProposal
+      summary: Approve a pending proposal
+      parameters:
+        - name: proposalId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Proposal approved, execution started
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExecutionResult'
+        '400':
+          description: Cannot approve (already processed or invalid)
+
+  /proposals/{proposalId}/deny:
+    post:
+      operationId: denyProposal
+      summary: Deny a pending proposal
+      parameters:
+        - name: proposalId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Proposal denied
+        '400':
+          description: Cannot deny (already processed)
+
+  # ============================================
+  # Audit APIs
+  # ============================================
+  /audit:
+    get:
+      operationId: queryAuditLog
+      summary: Query audit log with filters
+      parameters:
+        - name: action_type
+          in: query
+          schema:
+            type: string
+        - name: outcome
+          in: query
+          schema:
+            $ref: '#/components/schemas/ActionOutcome'
+        - name: from_date
+          in: query
+          schema:
+            type: string
+            format: date-time
+        - name: to_date
+          in: query
+          schema:
+            type: string
+            format: date-time
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 50
+            maximum: 1000
+        - name: offset
+          in: query
+          schema:
+            type: integer
+            default: 0
+      responses:
+        '200':
+          description: Audit records
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  records:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/AuditRecord'
+                  total:
+                    type: integer
+                  page:
+                    type: integer
+                  pageSize:
+                    type: integer
+
+  /audit/{recordId}/rollback:
+    post:
+      operationId: rollbackAction
+      summary: Rollback a previously executed action
+      parameters:
+        - name: recordId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Rollback successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RollbackResult'
+        '400':
+          description: Cannot rollback (irreversible or already rolled back)
+
+  /audit/export:
+    post:
+      operationId: exportAuditLog
+      summary: Export audit log to file
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [format]
+              properties:
+                format:
+                  type: string
+                  enum: [json, csv]
+                filter:
+                  $ref: '#/components/schemas/AuditFilter'
+      responses:
+        '200':
+          description: Export file path
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  filePath:
+                    type: string
+
+  # ============================================
+  # Trust Management APIs
+  # ============================================
+  /trust:
+    get:
+      operationId: getAllTrustLevels
+      summary: Get trust levels for all operations
+      responses:
+        '200':
+          description: Trust level map
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TrustLevelRecord'
+
+  /trust/{operationType}:
+    get:
+      operationId: getTrustLevel
+      summary: Get trust level for specific operation
+      parameters:
+        - name: operationType
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Trust level record
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TrustLevelRecord'
+
+    put:
+      operationId: setTrustLevel
+      summary: Set trust level for operation
+      parameters:
+        - name: operationType
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [level]
+              properties:
+                level:
+                  $ref: '#/components/schemas/TrustLevel'
+      responses:
+        '200':
+          description: Trust level updated
+        '400':
+          description: Cannot set level (promotion requirements not met)
+
+  /trust/attestation:
+    get:
+      operationId: checkAttestationDue
+      summary: Check which operations need attestation
+      responses:
+        '200':
+          description: Attestation status
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AttestationCheck'
+
+    post:
+      operationId: confirmAttestation
+      summary: Confirm attestation for operations
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [operations]
+              properties:
+                operations:
+                  type: array
+                  items:
+                    type: string
+      responses:
+        '200':
+          description: Attestation confirmed
+
+  # ============================================
+  # Skills APIs
+  # ============================================
+  /skills:
+    get:
+      operationId: getAllSkills
+      summary: Get all skills
+      parameters:
+        - name: status
+          in: query
+          schema:
+            $ref: '#/components/schemas/SkillStatus'
+      responses:
+        '200':
+          description: Skills list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Skill'
+
+  /skills/{skillId}:
+    get:
+      operationId: getSkill
+      summary: Get skill by ID
+      parameters:
+        - name: skillId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Skill details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Skill'
+        '404':
+          description: Skill not found
+
+  /skills/{skillId}/deprecate:
+    post:
+      operationId: deprecateSkill
+      summary: Deprecate a skill
+      parameters:
+        - name: skillId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Skill deprecated
+
+  # ============================================
+  # Settings APIs
+  # ============================================
+  /settings/preferences:
+    get:
+      operationId: getPreferences
+      summary: Get user preferences
+      responses:
+        '200':
+          description: User preferences
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserPreferences'
+
+    put:
+      operationId: updatePreferences
+      summary: Update user preferences
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserPreferences'
+      responses:
+        '200':
+          description: Preferences updated
+
+  /settings/models:
+    get:
+      operationId: getAvailableModels
+      summary: Get available AI models
+      responses:
+        '200':
+          description: Model options
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ModelOption'
+
+  /settings/models/expert:
+    put:
+      operationId: setExpertModel
+      summary: Set the expert AI model
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [modelId]
+              properties:
+                modelId:
+                  type: string
+      responses:
+        '200':
+          description: Model switched
+        '400':
+          description: Model not available
+
+  /settings/api-keys/{provider}:
+    put:
+      operationId: setApiKey
+      summary: Set API key for cloud provider
+      parameters:
+        - name: provider
+          in: path
+          required: true
+          schema:
+            type: string
+            enum: [claude, openai, servicenow]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [apiKey]
+              properties:
+                apiKey:
+                  type: string
+      responses:
+        '200':
+          description: API key saved
+
+    delete:
+      operationId: deleteApiKey
+      summary: Delete API key for cloud provider
+      parameters:
+        - name: provider
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: API key deleted
+
+  # ============================================
+  # System APIs
+  # ============================================
+  /system/health:
+    get:
+      operationId: healthCheck
+      summary: Check system health
+      responses:
+        '200':
+          description: System health status
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ollama:
+                    type: string
+                    enum: [available, unavailable]
+                  database:
+                    type: string
+                    enum: [healthy, degraded, error]
+                  stt:
+                    type: string
+                    enum: [available, unavailable]
+
+  /system/llm/status:
+    get:
+      operationId: getLLMStatus
+      summary: Get LLM service status
+      responses:
+        '200':
+          description: LLM status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ModelInfo'
+
+components:
+  schemas:
+    # Core Types
+    ISO8601String:
+      type: string
+      format: date-time
+
+    TrustLevel:
+      type: string
+      enum: [OBSERVE, SUPERVISED, DELEGATED]
+
+    RollbackType:
+      type: string
+      enum: [FULL, PARTIAL, COMPENSATABLE, IRREVERSIBLE]
+
+    DataDomain:
+      type: string
+      enum: [enterprise, personal]
+
+    DataClassification:
+      type: string
+      enum: [public, internal, confidential, restricted]
+
+    SkillStatus:
+      type: string
+      enum: [pending, active, deprecated]
+
+    ActionOutcome:
+      type: string
+      enum: [success, failure, pending, rolled_back]
+
+    # Input Types
+    ProcessedInput:
+      type: object
+      required: [id, text, source, timestamp]
+      properties:
+        id:
+          type: string
+        text:
+          type: string
+        source:
+          type: string
+          enum: [text, audio]
+        timestamp:
+          $ref: '#/components/schemas/ISO8601String'
+
+    TranscriptionPreview:
+      type: object
+      required: [id, text, confidence, duration_ms]
+      properties:
+        id:
+          type: string
+        text:
+          type: string
+        confidence:
+          type: number
+          minimum: 0
+          maximum: 1
+        duration_ms:
+          type: integer
+
+    # Proposal Types
+    ActionProposal:
+      type: object
+      required:
+        - id
+        - timestamp
+        - intent
+        - operation
+        - data_domain
+        - data_classification
+        - reversibility
+        - confidence
+        - risk_level
+        - requires_confirmation
+      properties:
+        id:
+          type: string
+        timestamp:
+          $ref: '#/components/schemas/ISO8601String'
+        intent:
+          type: string
+        operation:
+          type: string
+        target_entity:
+          $ref: '#/components/schemas/EntityReference'
+        data_domain:
+          $ref: '#/components/schemas/DataDomain'
+        data_classification:
+          $ref: '#/components/schemas/DataClassification'
+        reversibility:
+          $ref: '#/components/schemas/RollbackType'
+        confidence:
+          type: number
+          minimum: 0
+          maximum: 1
+        related_skills:
+          type: array
+          items:
+            $ref: '#/components/schemas/SkillReference'
+        rollback_plan:
+          $ref: '#/components/schemas/RollbackPlan'
+        evaluation_model:
+          type: string
+        raw_user_input:
+          type: string
+        requires_confirmation:
+          type: boolean
+        risk_level:
+          type: string
+          enum: [low, medium, high]
+
+    EntityReference:
+      type: object
+      required: [type, id, source]
+      properties:
+        type:
+          type: string
+        id:
+          type: string
+        source:
+          type: string
+
+    SkillReference:
+      type: object
+      required: [id, version_hash]
+      properties:
+        id:
+          type: string
+        version_hash:
+          type: string
+
+    RollbackPlan:
+      type: object
+      required: [type, method, steps, estimated_success_rate]
+      properties:
+        type:
+          $ref: '#/components/schemas/RollbackType'
+        method:
+          type: string
+        steps:
+          type: array
+          items:
+            $ref: '#/components/schemas/RollbackStep'
+        estimated_success_rate:
+          type: number
+
+    RollbackStep:
+      type: object
+      required: [order, action, reversible]
+      properties:
+        order:
+          type: integer
+        action:
+          type: string
+        reversible:
+          type: boolean
+
+    # Execution Types
+    ExecutionResult:
+      type: object
+      required: [success, action_id, proposal_id, steps_completed, steps_total, duration_ms]
+      properties:
+        success:
+          type: boolean
+        action_id:
+          type: string
+        proposal_id:
+          type: string
+        steps_completed:
+          type: integer
+        steps_total:
+          type: integer
+        result_data:
+          type: object
+        error:
+          $ref: '#/components/schemas/ExecutionError'
+        duration_ms:
+          type: integer
+
+    ExecutionError:
+      type: object
+      required: [code, message, recoverable]
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        step_index:
+          type: integer
+        recoverable:
+          type: boolean
+
+    RollbackResult:
+      type: object
+      required: [success, original_action_id, steps_rolled_back, steps_total]
+      properties:
+        success:
+          type: boolean
+        original_action_id:
+          type: string
+        steps_rolled_back:
+          type: integer
+        steps_total:
+          type: integer
+        error:
+          $ref: '#/components/schemas/ExecutionError'
+
+    # Audit Types
+    AuditRecord:
+      type: object
+      required: [id, timestamp, actor, action_type, policy_result, outcome]
+      properties:
+        id:
+          type: string
+        timestamp:
+          $ref: '#/components/schemas/ISO8601String'
+        actor:
+          type: object
+          properties:
+            type:
+              type: string
+              enum: [user, ai, system]
+            id:
+              type: string
+        action_type:
+          type: string
+        target_entity:
+          $ref: '#/components/schemas/EntityReference'
+        proposal_id:
+          type: string
+        policy_result:
+          type: object
+          properties:
+            passed:
+              type: boolean
+            rule_references:
+              type: array
+              items:
+                type: string
+            denial_reason:
+              type: string
+        skill_version:
+          type: string
+        model_used:
+          type: string
+        input_hash:
+          type: string
+        outcome:
+          $ref: '#/components/schemas/ActionOutcome'
+        metadata:
+          type: object
+        rollback_of:
+          type: string
+
+    AuditFilter:
+      type: object
+      properties:
+        actor_type:
+          type: string
+        actor_id:
+          type: string
+        action_type:
+          type: string
+        outcome:
+          $ref: '#/components/schemas/ActionOutcome'
+        from_date:
+          $ref: '#/components/schemas/ISO8601String'
+        to_date:
+          $ref: '#/components/schemas/ISO8601String'
+        limit:
+          type: integer
+        offset:
+          type: integer
+
+    # Trust Types
+    TrustLevelRecord:
+      type: object
+      required: [operation_type, level, successful_count, rollback_count, updated_at]
+      properties:
+        operation_type:
+          type: string
+        level:
+          $ref: '#/components/schemas/TrustLevel'
+        successful_count:
+          type: integer
+        rollback_count:
+          type: integer
+        last_attestation:
+          $ref: '#/components/schemas/ISO8601String'
+        next_attestation_due:
+          $ref: '#/components/schemas/ISO8601String'
+        updated_at:
+          $ref: '#/components/schemas/ISO8601String'
+
+    AttestationCheck:
+      type: object
+      required: [operation, current_level, days_until_due, requires_action]
+      properties:
+        operation:
+          type: string
+        current_level:
+          $ref: '#/components/schemas/TrustLevel'
+        days_until_due:
+          type: integer
+        requires_action:
+          type: boolean
+
+    # Skill Types
+    Skill:
+      type: object
+      required: [id, name, version_hash, status, origin, enabled_operations, required_trust_level, priority, data_domain]
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        version_hash:
+          type: string
+        status:
+          $ref: '#/components/schemas/SkillStatus'
+        origin:
+          type: string
+          enum: [human, ai]
+        enabled_operations:
+          type: array
+          items:
+            type: string
+        policy_constraints:
+          type: array
+          items:
+            $ref: '#/components/schemas/PolicyConstraint'
+        required_trust_level:
+          $ref: '#/components/schemas/TrustLevel'
+        priority:
+          type: integer
+        data_domain:
+          type: string
+          enum: [enterprise, personal, both]
+        created_at:
+          $ref: '#/components/schemas/ISO8601String'
+        activated_at:
+          $ref: '#/components/schemas/ISO8601String'
+        activated_by:
+          type: string
+
+    PolicyConstraint:
+      type: object
+      required: [type, rule, error_message]
+      properties:
+        type:
+          type: string
+          enum: [precondition, invariant, postcondition]
+        rule:
+          type: string
+        error_message:
+          type: string
+
+    # Settings Types
+    UserPreferences:
+      type: object
+      properties:
+        default_expert_model:
+          type: string
+        cloud_ai_enabled:
+          type: boolean
+        allowed_cloud_models:
+          type: array
+          items:
+            type: string
+        default_data_domain:
+          $ref: '#/components/schemas/DataDomain'
+        stt_enabled:
+          type: boolean
+        stt_auto_submit:
+          type: boolean
+        theme:
+          type: string
+          enum: [light, dark, system]
+        keyboard_shortcuts_enabled:
+          type: boolean
+        high_contrast_mode:
+          type: boolean
+        large_text_mode:
+          type: boolean
+
+    ModelOption:
+      type: object
+      required: [id, name, provider, type, requires_api_key]
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        provider:
+          type: string
+          enum: [local, cloud]
+        type:
+          type: string
+          enum: [ollama, lmstudio, claude, openai, servicenow]
+        endpoint:
+          type: string
+        requires_api_key:
+          type: boolean
+
+    ModelInfo:
+      type: object
+      required: [provider, model_name, status, last_check]
+      properties:
+        provider:
+          type: string
+        model_name:
+          type: string
+        status:
+          type: string
+          enum: [available, unavailable, loading]
+        last_check:
+          $ref: '#/components/schemas/ISO8601String'
+
+    # Error Types
+    AppError:
+      type: object
+      required: [code, category, message, user_message, recoverable]
+      properties:
+        code:
+          type: string
+        category:
+          type: string
+          enum: [input, llm, policy, execution, storage, network, auth, system]
+        message:
+          type: string
+        user_message:
+          type: string
+        recoverable:
+          type: boolean
+        suggested_action:
+          type: string
+        metadata:
+          type: object
