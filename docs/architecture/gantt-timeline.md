@@ -1,3 +1,20 @@
+# Implementation Timeline (Gantt Chart)
+
+**Project:** Lumos - AI Work Assistant
+**Estimated Duration:** ~40 working days (8 weeks)
+**Start Date:** 2026-02-03
+**Target Completion:** 2026-04-03
+**Date:** 2026-01-28
+
+---
+
+## Overview
+
+This Gantt chart visualizes the implementation timeline for all 53 tasks across 8 milestones. The timeline excludes weekends and shows task dependencies and parallelization opportunities.
+
+## Timeline Chart
+
+```mermaid
 gantt
     title Lumos AI Work Assistant - Implementation Timeline
     dateFormat YYYY-MM-DD
@@ -79,3 +96,74 @@ gantt
     T-8.1.3 Auto-Update Setup             :m8_3, after m8_2, 1d
     T-8.2.3 Documentation & Help          :m8_6, after m8_5, 1d
     M8 Checkpoint & Release               :milestone, release, after m8_3 m8_6, 0d
+```
+
+## Timeline Summary
+
+| Milestone | Duration | Start | End | Parallel Tasks |
+|-----------|----------|-------|-----|----------------|
+| M1: Foundation | 4 days | Week 1 | Week 1 | Yes (2 parallel tracks) |
+| M2: Input & Classification | 5 days | Week 2 | Week 2 | Yes (2 parallel tracks) |
+| M3: AI Services | 7 days | Week 1-2 | Week 2-3 | Yes (2 parallel tracks) |
+| M4: Governance | 7 days | Week 1-2 | Week 2-3 | Yes (2 parallel tracks) |
+| M5: Execution & Audit | 6 days | Week 3 | Week 4 | Yes (2 parallel tracks) |
+| M6: User Interface | 9 days | Week 2-4 | Week 5 | Mostly parallel |
+| M7: Integration & Testing | 7 days | Week 5 | Week 6 | Some parallel |
+| M8: Packaging & Release | 4 days | Week 7 | Week 7 | Yes (2 parallel tracks) |
+
+## Critical Path
+
+The critical path (marked in red on the Gantt chart) includes:
+1. **M4: Governance Pipeline** - All tasks are critical
+2. **T-3.1.3: Constrained JSON Decoding** - Highest technical risk
+
+Any delays in these tasks will directly impact the overall timeline.
+
+## Parallelization Strategy
+
+The timeline maximizes parallelization:
+
+**Week 1-2 (Foundation):**
+- M1, M2, M3, and M4 start simultaneously after M1 foundation tasks
+- M6 UI work can start early for non-integrated components
+
+**Week 3-4 (Integration):**
+- M5 requires M2, M3, M4 completion
+- M6 can continue in parallel with M5
+
+**Week 5-6 (Testing):**
+- M7 requires M5 and M6 completion
+- Multiple test types run in parallel
+
+**Week 7-8 (Release):**
+- M8 packaging tasks run in parallel tracks
+
+## Assumptions
+
+1. Single developer working full-time (8 hours/day)
+2. Weekends excluded from timeline
+3. No major blockers or technical discoveries requiring rework
+4. Ollama and MCP servers are pre-installed and configured
+5. FluidAudio integration follows documented patterns
+
+## Risk Factors
+
+| Risk | Impact | Mitigation |
+|------|--------|------------|
+| Constrained JSON decoding complexity | +2-4 days | Allocated extra time (6h vs 4h estimate) |
+| Swift-Electron bridge issues | +2-3 days | Early spike in M2 |
+| Policy engine performance | +2-3 days | Load testing in M7 |
+| MCP server compatibility | +1-2 days | Validation in M7 integration tests |
+
+## Milestones & Checkpoints
+
+- **M1 Checkpoint**: Feb 7 - Foundation complete, can start parallel work
+- **M4 Checkpoint**: Feb 18 - Governance pipeline complete (critical milestone)
+- **M5 Checkpoint**: Feb 25 - Execution layer ready, UI can integrate
+- **M6 Checkpoint**: Feb 28 - UI complete, ready for full E2E testing
+- **M7 Checkpoint**: Mar 11 - All tests passing, quality gates met
+- **M8 Release**: Mar 18 - Production-ready release
+
+---
+
+**Note:** This timeline is auto-generated from task estimates. Actual duration may vary based on technical discoveries and implementation complexity. Regular checkpoint reviews are recommended.

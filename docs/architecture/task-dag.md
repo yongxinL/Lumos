@@ -1,3 +1,19 @@
+# Task Dependency Graph (DAG)
+
+**Project:** Lumos - AI Work Assistant
+**Total Tasks:** 53
+**Total Effort:** 208 hours
+**Date:** 2026-01-28
+
+---
+
+## Overview
+
+This diagram shows the complete task dependency graph for Lumos implementation, organized by milestones. Critical path tasks (Milestone 4: Governance Pipeline) are highlighted.
+
+## Task DAG
+
+```mermaid
 %%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#4A90D9', 'primaryTextColor': '#fff', 'primaryBorderColor': '#2E5A8A', 'lineColor': '#5D6D7E', 'secondaryColor': '#82E0AA', 'tertiaryColor': '#F9E79F'}}}%%
 
 flowchart TD
@@ -160,3 +176,41 @@ flowchart TD
     class T6.1.1,T6.1.2,T6.1.3,T6.2.1,T6.2.2,T6.2.3,T6.2.4,T6.3.1,T6.3.2 task
     class T7.1.1,T7.1.2,T7.1.3,T7.2.1,T7.2.2,T7.2.3,T7.3.1,T7.3.2 task
     class T8.1.1,T8.1.2,T8.1.3,T8.2.1,T8.2.2,T8.2.3 task
+```
+
+## Legend
+
+- **Blue nodes**: Milestones (M1-M8)
+- **Green nodes**: Standard tasks
+- **Yellow nodes**: Critical path tasks (Governance Pipeline)
+- **Arrows**: Dependencies (must complete before next task)
+
+## Critical Path
+
+The critical path runs through Milestone 4 (Governance Pipeline):
+1. T-4.1.1: Skill Registry
+2. T-4.1.2: Constraint Evaluator
+3. T-4.1.3: Policy Engine Core (highest priority)
+4. T-4.2.1: Trust Level State Machine
+5. T-4.2.2: Trust Management Service
+
+All execution (M5), UI (M6), and testing (M7) milestones depend on M4 completion.
+
+## Milestone Dependencies
+
+```
+M1 (Foundation)
+├─→ M2 (Input)
+├─→ M3 (AI Services)
+├─→ M4 (Governance) ⚠️ CRITICAL
+└─→ M6 (UI)
+
+M2, M3, M4 → M5 (Execution)
+M5 → M6 (UI completion)
+M6 → M7 (Testing)
+M7 → M8 (Release)
+```
+
+---
+
+**Note:** This diagram is auto-generated from the task decomposition in Phase 2 (Planning). See [tasks/_index.md](tasks/_index.md) for detailed task information.
