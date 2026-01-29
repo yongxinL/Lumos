@@ -75,25 +75,25 @@ This diagram shows the complete task dependency graph for Lumos implementation, 
 
 | Category | Technology | Version | npm Package |
 |----------|------------|---------|-------------|
-| **Desktop Framework** | Electron | 33.x | `electron@^33.0.0` |
-| **Build Tool** | Vite | 6.x | `vite@^6.0.0` |
-| **Frontend** | React | 18.x | `react@^18.3.0` |
-| **State Management** | Zustand | 5.x | `zustand@^5.0.0` |
-| **Styling** | Tailwind CSS | 4.x | `tailwindcss@^4.0.0` |
+| **Desktop Framework** | Electron | 39.x | `electron@^39.0.0` |
+| **Build Tool** | Vite | 7.x | `vite@^7.3.1` |
+| **Frontend** | React | 19.x | `react@^19.2.0` |
+| **State Management** | Zustand | 5.x | `zustand@^5.0.10` |
+| **Styling** | Tailwind CSS | 4.x | `tailwindcss@^4.1.18` |
 | **UI Components** | shadcn/ui | 2.x | `shadcn@^2.3.0` (CLI) |
-| **Language** | TypeScript | 5.x | `typescript@^5.6.0` |
-| **Database** | better-sqlite3 | 11.x | `better-sqlite3@^11.6.0` |
+| **Language** | TypeScript | 5.x | `typescript@^5.9.3` |
+| **Database** | better-sqlite3 | 12.x | `better-sqlite3@^12.6.2` |
 | **DB Types** | @types/better-sqlite3 | Latest | `@types/better-sqlite3` |
-| **Validation** | AJV | 8.x | `ajv@^8.17.0` |
-| **MCP SDK** | MCP TypeScript SDK | 1.x | `@modelcontextprotocol/sdk@^1.0.0` |
+| **Validation** | AJV | 8.x | `ajv@^8.19.0` |
+| **MCP SDK** | MCP TypeScript SDK | 1.x | `@modelcontextprotocol/sdk@^1.25.2` |
 | **MCP Dependency** | Zod | 3.x | `zod@^3.25.0` |
-| **Unit Testing** | Vitest | 3.x | `vitest@^3.0.0` |
-| **E2E Testing** | Playwright | 1.51.x | `@playwright/test@^1.51.0` |
-| **Linting** | ESLint | 9.x | `eslint@^9.0.0` |
-| **Formatting** | Prettier | 3.x | `prettier@^3.4.0` |
+| **Unit Testing** | Vitest | 4.x | `vitest@^4.0.17` |
+| **E2E Testing** | Playwright | 1.57.x | `@playwright/test@^1.57.0` |
+| **Linting** | ESLint | 9.x | `eslint@^9.39.2` |
+| **Formatting** | Prettier | 3.x | `prettier@^3.7.4` |
 | **Package Manager** | pnpm | 9.x | N/A (global install) |
 | **Node.js** | Node.js | 22.x LTS | N/A |
-| **Build** | electron-builder | 25.x | `electron-builder@^25.0.0` |
+| **Build** | electron-builder | 26.x | `electron-builder@^26.5.0` |
 
 ---
 

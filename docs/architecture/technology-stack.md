@@ -15,7 +15,7 @@
 
 | Component | Technology | Version | npm Package | Justification | Competitive Edge |
 |-----------|------------|---------|-------------|---------------|------------------|
-| Framework | **Electron** | 33.x | `electron@^33.0.0` | Cross-platform desktop, Node.js 22 runtime, native API access | Native OS integration vs web-only competitors (Linear, Notion) |
+| Framework | **Electron** | 39.x | `electron@^39.0.0` | Cross-platform desktop, Node.js 22 runtime, native API access | Native OS integration vs web-only competitors (Linear, Notion) |
 | Build Tool | **electron-builder** | 25.x | `electron-builder@^25.0.0` | macOS signing, notarization, auto-update | Auto-update capability vs manual installs |
 | Bundler | **Vite** | 6.x | `vite@^6.0.0` | Fast HMR, ESM native, Rollup-based production | Faster dev cycles than webpack-based solutions |
 
@@ -23,21 +23,21 @@
 
 | Component | Technology | Version | npm Package | Justification | Competitive Edge |
 |-----------|------------|---------|-------------|---------------|------------------|
-| UI Framework | **React** | 18.x | `react@^18.3.0` | Component model, concurrent features, large ecosystem | Industry standard with huge talent pool vs Vue/Svelte |
-| State Management | **Zustand** | 5.x | `zustand@^5.0.0` | Simple, TypeScript-first, no boilerplate | Simpler than Redux, faster than Context API |
-| Styling | **Tailwind CSS** | 4.x | `tailwindcss@^4.0.0` | Utility-first, design system consistency | Faster styling than CSS-in-JS, consistent design |
-| Components | **shadcn/ui** | 2.x | `shadcn@^2.3.0` (CLI) | Accessible, customizable, React 18 compatible | Copy-paste components vs locked-in libraries |
-| Routing | **React Router** | 7.x | `react-router-dom@^7.0.0` | Standard React routing | De facto standard, mature ecosystem |
+| UI Framework | **React** | 19.x | `react@^19.2.0` | Actions, new hooks, concurrent features, modern ecosystem | Industry standard with huge talent pool vs Vue/Svelte |
+| State Management | **Zustand** | 5.x | `zustand@^5.0.10` | Simple, TypeScript-first, no boilerplate | Simpler than Redux, faster than Context API |
+| Styling | **Tailwind CSS** | 4.x | `tailwindcss@^4.1.18` | Utility-first, design system consistency | Faster styling than CSS-in-JS, consistent design |
+| Components | **shadcn/ui** | 2.x | `shadcn@^2.3.0` (CLI) | Accessible, customizable, React 19 compatible | Copy-paste components vs locked-in libraries |
+| Routing | **React Router** | 7.x | `react-router-dom@^7.12.0` | Standard React routing | De facto standard, mature ecosystem |
 
 ### Backend (Main Process)
 
 | Component | Technology | Version | npm Package | Justification | Competitive Edge |
 |-----------|------------|---------|-------------|---------------|------------------|
-| Language | **TypeScript** | 5.x | `typescript@^5.6.0` | Type safety, IDE support, refactoring confidence | Fewer runtime bugs than JavaScript |
-| Database | **better-sqlite3** | 11.x | `better-sqlite3@^11.6.0` | Synchronous API, WAL mode, fast | Embedded DB, no server setup vs PostgreSQL |
+| Language | **TypeScript** | 5.x | `typescript@^5.9.3` | Type safety, IDE support, refactoring confidence | Fewer runtime bugs than JavaScript |
+| Database | **better-sqlite3** | 12.x | `better-sqlite3@^12.6.2` | Synchronous API, WAL mode, fast, Electron 39 compatible | Embedded DB, no server setup vs PostgreSQL |
 | DB Types | **@types/better-sqlite3** | 7.x | `@types/better-sqlite3@^7.6.0` | TypeScript definitions | Type-safe queries |
-| Validation | **AJV** | 8.x | `ajv@^8.17.0` | JSON Schema validation, fast | Fastest JSON Schema validator |
-| YAML Parsing | **yaml** | 2.x | `yaml@^2.6.0` | YAML parsing for skills/policies | Human-readable config vs JSON |
+| Validation | **AJV** | 8.x | `ajv@^8.19.0` | JSON Schema validation, fast | Fastest JSON Schema validator |
+| YAML Parsing | **yaml** | 2.x | `yaml@^2.8.2` | YAML parsing for skills/policies | Human-readable config vs JSON |
 | Encryption | **Node crypto** | Built-in | N/A | AES-256-GCM support | Native, no dependencies |
 
 ### AI & ML
@@ -52,10 +52,10 @@
 
 | Component | Technology | Version | npm Package | Justification | Competitive Edge |
 |-----------|------------|---------|-------------|---------------|------------------|
-| MCP Client | **MCP TypeScript SDK** | 1.x | `@modelcontextprotocol/sdk@^1.0.0` | Official SDK, TypeScript | **Standardized tool protocol vs custom APIs** |
+| MCP Client | **MCP TypeScript SDK** | 1.x | `@modelcontextprotocol/sdk@^1.25.2` | Official SDK, TypeScript | **Standardized tool protocol vs custom APIs** |
 | MCP Dependency | **Zod** | 3.x | `zod@^3.25.0` | Schema validation for MCP | Type-safe runtime validation |
 | HTTP Client | **fetch** | Built-in | N/A | Native (Node 22+) | No dependencies, standard API |
-| WebSocket | **ws** | 8.x | `ws@^8.18.0` | Streaming responses | Real-time updates vs polling |
+| WebSocket | **ws** | 8.x | `ws@^8.19.0` | Streaming responses | Real-time updates vs polling |
 
 ---
 
@@ -67,31 +67,31 @@
 |------|---------|-------------|---------|
 | Node.js | 22.x LTS | N/A | Runtime |
 | pnpm | 9.x | N/A (global) | Package manager |
-| Vitest | 3.x | `vitest@^3.0.0` | Unit testing |
-| Playwright | 1.51.x | `@playwright/test@^1.51.0` | E2E testing |
-| ESLint | 9.x | `eslint@^9.0.0` | Linting (flat config) |
-| Prettier | 3.x | `prettier@^3.4.0` | Formatting |
-| Husky | 9.x | `husky@^9.0.0` | Git hooks |
-| lint-staged | 15.x | `lint-staged@^15.0.0` | Pre-commit linting |
+| Vitest | 4.x | `vitest@^4.0.17` | Unit testing |
+| Playwright | 1.57.x | `@playwright/test@^1.57.0` | E2E testing |
+| ESLint | 9.x | `eslint@^9.39.2` | Linting (flat config) |
+| Prettier | 3.x | `prettier@^3.7.4` | Formatting |
+| Husky | 9.x | `husky@^9.1.7` | Git hooks |
+| lint-staged | 16.x | `lint-staged@^16.2.7` | Pre-commit linting |
 
 ### TypeScript Tooling
 
 | Tool | Version | npm Package | Purpose |
 |------|---------|-------------|---------|
-| typescript-eslint | 8.x | `typescript-eslint@^8.0.0` | TypeScript ESLint |
-| @vitejs/plugin-react | 4.x | `@vitejs/plugin-react@^4.3.0` | React Vite plugin |
+| typescript-eslint | 8.x | `typescript-eslint@^8.53.0` | TypeScript ESLint |
+| @vitejs/plugin-react | 5.x | `@vitejs/plugin-react@^5.1.2` | React Vite plugin |
 | @types/node | 22.x | `@types/node@^22.0.0` | Node.js types |
-| @types/react | 18.x | `@types/react@^18.3.0` | React types |
-| @types/react-dom | 18.x | `@types/react-dom@^18.3.0` | React DOM types |
+| @types/react | 19.x | `@types/react@^19.0.0` | React types |
+| @types/react-dom | 19.x | `@types/react-dom@^19.0.0` | React DOM types |
 
 ### CI/CD
 
-| Tool | Purpose |
-|------|---------|
-| GitHub Actions | CI/CD pipeline |
-| electron-builder | macOS builds |
-| Apple Developer ID | Code signing |
-| Apple Notary | Gatekeeper approval |
+| Tool | Version | Purpose |
+|------|---------|---------|
+| GitHub Actions | - | CI/CD pipeline |
+| electron-builder | 26.x | macOS builds |
+| Apple Developer ID | - | Code signing |
+| Apple Notary | - | Gatekeeper approval |
 
 ---
 
@@ -100,35 +100,35 @@
 ```json
 {
   "dependencies": {
-    "react": "^18.3.0",
-    "react-dom": "^18.3.0",
-    "react-router-dom": "^7.0.0",
-    "zustand": "^5.0.0",
-    "better-sqlite3": "^11.6.0",
-    "ajv": "^8.17.0",
-    "yaml": "^2.6.0",
-    "@modelcontextprotocol/sdk": "^1.0.0",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "react-router-dom": "^7.12.0",
+    "zustand": "^5.0.10",
+    "better-sqlite3": "^12.6.2",
+    "ajv": "^8.19.0",
+    "yaml": "^2.8.2",
+    "@modelcontextprotocol/sdk": "^1.25.2",
     "zod": "^3.25.0",
-    "ws": "^8.18.0"
+    "ws": "^8.19.0"
   },
   "devDependencies": {
-    "electron": "^33.0.0",
-    "electron-builder": "^25.0.0",
-    "typescript": "^5.6.0",
-    "vite": "^6.0.0",
-    "@vitejs/plugin-react": "^4.3.0",
-    "tailwindcss": "^4.0.0",
-    "@tailwindcss/vite": "^4.0.0",
-    "vitest": "^3.0.0",
-    "@playwright/test": "^1.51.0",
-    "eslint": "^9.0.0",
-    "typescript-eslint": "^8.0.0",
-    "prettier": "^3.4.0",
-    "husky": "^9.0.0",
-    "lint-staged": "^15.0.0",
+    "electron": "^39.0.0",
+    "electron-builder": "^26.5.0",
+    "typescript": "^5.9.3",
+    "vite": "^7.3.1",
+    "@vitejs/plugin-react": "^5.1.2",
+    "tailwindcss": "^4.1.18",
+    "@tailwindcss/vite": "^4.1.18",
+    "vitest": "^4.0.17",
+    "@playwright/test": "^1.57.0",
+    "eslint": "^9.39.2",
+    "typescript-eslint": "^8.53.0",
+    "prettier": "^3.7.4",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.2.7",
     "@types/node": "^22.0.0",
-    "@types/react": "^18.3.0",
-    "@types/react-dom": "^18.3.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
     "@types/better-sqlite3": "^7.6.0",
     "@types/ws": "^8.5.0"
   }
@@ -158,7 +158,7 @@ cd swift && swift package resolve
 
 | Electron | Node.js | Chromium | React | TypeScript | Vite |
 |----------|---------|----------|-------|------------|------|
-| 33.x | 22.x | 130.x | 18.x | 5.x | 6.x |
+| 39.x | 22.x | 142.x | 19.x | 5.x | 7.x |
 
 ---
 
@@ -197,7 +197,7 @@ cd swift && swift package resolve
 ### Phase 1 (MVP)
 
 - macOS only
-- Electron 33.x desktop app
+- Electron 39.x desktop app
 - Ollama local LLM
 - SQLite storage
 - MCP Calendar + Filesystem
@@ -217,12 +217,15 @@ cd swift && swift package resolve
 
 | Change | Old | New | Migration Notes |
 |--------|-----|-----|-----------------|
-| Electron | 28.x | 33.x | Update preload scripts for new security APIs |
-| Vite | 5.x | 6.x | Update vite.config.ts for new options |
-| better-sqlite3 | 9.x | 11.x | Compatible, may need rebuild for Electron |
+| Electron | 28.x | 39.x | Update preload scripts for new security APIs |
+| React | 18.x | 19.x | Remove forwardRef, update to new hooks API |
+| Vite | 5.x | 7.x | Update vite.config.ts for new options |
+| better-sqlite3 | 9.x | 12.x | Compatible with Electron 39, may need rebuild |
+| electron-builder | 24.x | 26.x | Update config for new signing options |
 | Zustand | 4.x | 5.x | Minor API changes, check persist middleware |
 | ESLint | 8.x | 9.x | Switch to flat config format |
-| Vitest | 1.x | 3.x | Update vitest.config.ts for new options |
+| Vitest | 1.x | 4.x | Update vitest.config.ts for new browser mode |
+| lint-staged | 15.x | 16.x | Update configuration format |
 
 ---
 
