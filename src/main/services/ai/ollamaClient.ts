@@ -127,7 +127,7 @@ export class OllamaClient extends EventEmitter {
         headers: { Accept: 'application/json' },
       });
 
-      return response.models || [];
+      return (response.models || []) as unknown as ModelInfo[];
     } catch (error) {
       throw this.mapError(error);
     }

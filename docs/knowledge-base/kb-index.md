@@ -16,8 +16,8 @@
 | Successes | 2      | 2026-01-29   |
 | Patterns  | 1      | 2026-01-29   |
 | Decisions | 3      | 2026-01-29   |
-| Instincts | 21     | 2026-01-30   |
-| **Total** | **29** | 2026-01-30   |
+| Instincts | 29     | 2026-01-30   |
+| **Total** | **37** | 2026-01-30   |
 
 ---
 
@@ -281,6 +281,21 @@
 | [typescript-strict-ajv-keywords](instincts/technical/typescript-strict-ajv-keywords.md)             | 0.95       | TypeScript & Types     | When AJV custom keywords cause TypeScript strict mode errors |
 
 **Summary:** Learned from T-3.1.3 Constrained JSON Decoding implementation. All instincts reinforce production-grade validation architecture: multi-layer pipelines (parse → schema → semantic → hooks), custom AJV keywords for complex rules, schema registries for Ollama compatibility, semantic validation with auto-correction, hook-based extensibility, and TypeScript workarounds for AJV's complex types. These patterns enable robust validation of LLM-generated JSON while maintaining extensibility and debuggability.
+
+### Session 7: AI Provider Abstraction (2026-01-30)
+
+| Instinct                                                                                          | Confidence | Domain       | Trigger                                                     |
+| ------------------------------------------------------------------------------------------------- | ---------- | ------------ | ----------------------------------------------------------- |
+| [type-name-collisions-barrel-exports](instincts/technical/type-name-collisions-barrel-exports.md) | 0.95       | Type System  | When building abstraction layers with type name collisions  |
+| [type-casting-through-unknown](instincts/technical/type-casting-through-unknown.md)               | 0.95       | Type System  | When TypeScript detects insufficient type overlap           |
+| [simplified-api-wrapping](instincts/technical/simplified-api-wrapping.md)                         | 0.95       | API Design   | When wrapping third-party APIs with simplified interfaces   |
+| [provider-abstraction-design](instincts/technical/provider-abstraction-design.md)                 | 0.95       | Architecture | When creating multi-backend provider abstractions           |
+| [registry-provider-management](instincts/technical/registry-provider-management.md)               | 0.95       | Architecture | When building plugin-like provider management systems       |
+| [event-forwarding-wrapper](instincts/technical/event-forwarding-wrapper.md)                       | 0.90       | Event-Driven | When wrapping EventEmitter classes in adapter pattern       |
+| [conditional-type-exports](instincts/technical/conditional-type-exports.md)                       | 0.90       | Type System  | When exporting types with name collisions from barrel files |
+| [test-mocking-third-party](instincts/technical/test-mocking-third-party.md)                       | 0.95       | Testing      | When testing wrapper classes with third-party dependencies  |
+
+**Summary:** Learned from T-3.2.1 AI Provider Interface implementation. All instincts focus on building production-grade abstraction layers: handling type collisions through direct imports, casting through 'unknown' for incompatible types, understanding API simplifications, designing provider abstractions with capabilities descriptors, managing providers with registry pattern, forwarding events in wrappers, using conditional type exports, and mocking third-party clients effectively. These patterns enable clean multi-backend architectures while maintaining type safety.
 
 ---
 

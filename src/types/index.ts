@@ -156,12 +156,23 @@ export type {
   GenerateResponse,
   ModelOptions,
   GenerateStreamChunk,
-  ModelInfo,
+  ModelInfo as OllamaModelInfo,
   ModelDetails,
   ListModelsResponse,
   PullProgress,
   HealthCheckResponse,
 } from './ai/ollama';
+
+export type {
+  AIProviderType,
+  AIProviderConfig,
+  AIProviderCapabilities,
+  GenerateOptions,
+  GenerateResponse as ProviderGenerateResponse,
+  StreamChunk,
+  ModelInfo,
+  ProviderHealthCheck,
+} from './ai/provider';
 
 // ============================================================================
 // IPC types (Inter-Process Communication)

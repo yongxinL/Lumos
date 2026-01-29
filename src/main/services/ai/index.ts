@@ -80,3 +80,25 @@ export {
   type ValidationErrorDetail,
   type RecoverySuggestion,
 } from './constrainedDecoder';
+
+// AI Provider Interface
+export type { IAIProvider, ProviderFactory, ProviderRegistration } from './providers';
+export {
+  AIProviderError,
+  ProviderConnectionError,
+  ProviderTimeoutError,
+  ProviderModelNotFoundError,
+  ProviderAPIError,
+  ProviderInvalidResponseError,
+  ProviderUnsupportedFeatureError,
+  ProviderConfigurationError,
+  ProviderAuthenticationError,
+  ProviderRateLimitError,
+  OllamaProvider,
+  createOllamaProvider,
+  OLLAMA_CAPABILITIES,
+  AIProviderRegistry,
+  getProviderRegistry,
+  resetProviderRegistry,
+  createDefaultOllamaProvider,
+} from './providers';
