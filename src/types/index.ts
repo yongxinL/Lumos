@@ -10,8 +10,12 @@
 // ============================================================================
 
 export interface ElectronAPI {
-  send: (_channel: string, _data: unknown) => void;
-  receive: (_channel: string, _func: (..._args: unknown[]) => void) => void;
+  send: (channel: string, data: unknown) => void;
+  receive: (channel: string, func: (...args: unknown[]) => void) => void;
+  getAppVersion: () => Promise<{ version: string }>;
+  onNavigate: (handler: (path: string) => void) => void;
+  onNewChat: (handler: () => void) => void;
+  onCommandPalette: (handler: () => void) => void;
 }
 
 declare global {
