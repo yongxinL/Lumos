@@ -13,3 +13,17 @@ export {
   OllamaAPIError,
   OllamaInvalidResponseError,
 } from './ollamaErrors';
+export {
+  EvaluationLLMService,
+  getEvaluationLlmService,
+  resetEvaluationLlmService,
+  type ProposalGenerationInput,
+  type EvaluationLLMConfig,
+} from './evaluationLlmService';
+export {
+  EvaluationError,
+  EvaluationModelNotFoundError,
+  EvaluationValidationError,
+  EvaluationTimeoutError,
+  EvaluationRetryExhaustedError,
+} from './evaluationErrors';
