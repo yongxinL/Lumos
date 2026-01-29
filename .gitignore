@@ -271,3 +271,21 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+
+###############################################################################
+# Swift / Native Code
+###############################################################################
+
+# Swift Package Manager
+swift/.build/
+swift/.swiftpm/
+*.xcodeproj
+*.xcworkspace
+Package.resolved
+
+# Xcode
+xcuserdata/
+*.xcscmblueprint
+*.xccheckout
+DerivedData/
