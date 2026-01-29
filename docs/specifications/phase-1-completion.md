@@ -18,18 +18,18 @@ Phase 1 (Requirements) has been successfully completed for the Lumos project, an
 
 ## Phase Objectives Met
 
-| Objective | Status | Notes |
-|-----------|--------|-------|
-| Requirements document complete | ✅ | [requirement_v02.md](../requirements/requirement_v02.md) |
-| System scope clearly defined | ✅ | Governed AI operating layer for ServiceNow |
-| Non-negotiable constraints identified | ✅ | 5 core governance rules |
-| Target platform specified | ✅ | macOS (Electron) for Phase 1/MVP |
-| User guarantees documented | ✅ | Observable, reversible, controllable |
-| Data models defined | ✅ | 12 TypeScript interfaces |
-| Service architecture specified | ✅ | 8 core services with interfaces |
-| UI/UX design complete | ✅ | 5 primary views with accessibility |
-| Storage strategy defined | ✅ | SQLite + Filesystem + Keychain |
-| Phase 1 MVP scope locked | ✅ | macOS, local-first, basic integrations |
+| Objective                             | Status | Notes                                                    |
+| ------------------------------------- | ------ | -------------------------------------------------------- |
+| Requirements document complete        | ✅     | [requirement_v02.md](../requirements/requirement_v02.md) |
+| System scope clearly defined          | ✅     | Governed AI operating layer for ServiceNow               |
+| Non-negotiable constraints identified | ✅     | 5 core governance rules                                  |
+| Target platform specified             | ✅     | macOS (Electron) for Phase 1/MVP                         |
+| User guarantees documented            | ✅     | Observable, reversible, controllable                     |
+| Data models defined                   | ✅     | 12 TypeScript interfaces                                 |
+| Service architecture specified        | ✅     | 8 core services with interfaces                          |
+| UI/UX design complete                 | ✅     | 5 primary views with accessibility                       |
+| Storage strategy defined              | ✅     | SQLite + Filesystem + Keychain                           |
+| Phase 1 MVP scope locked              | ✅     | macOS, local-first, basic integrations                   |
 
 ---
 
@@ -40,6 +40,7 @@ Phase 1 (Requirements) has been successfully completed for the Lumos project, an
 **Fundamental Concept:** AI proposes, humans approve, system enforces governance
 
 **Non-Negotiable System Rules:**
+
 1. ✅ AI must never execute actions directly
 2. ✅ Every action passes through: Proposal → Policy → Confirmation
 3. ✅ No silent permission escalation
@@ -47,6 +48,7 @@ Phase 1 (Requirements) has been successfully completed for the Lumos project, an
 5. ✅ No self-modifying policies or skills
 
 **User Guarantees:**
+
 - Observable: See what AI is allowed to do and what it has done
 - Reversible: High-risk actions have rollback plans
 - Controllable: Instant permission revocation, per-operation trust levels
@@ -125,12 +127,14 @@ Phase 1 (Requirements) has been successfully completed for the Lumos project, an
 ### Storage Layer
 
 **SQLite Database** (`runtime.db`):
+
 - Skills, policies, audit log, trust levels
 - User accounts and sessions
 - Meeting transcripts (encrypted)
 - Preferences and configuration
 
 **Filesystem** (human-editable):
+
 - Skills (YAML) - builtin + user-defined
 - Policies (YAML) - default + custom
 - Notes (user knowledge base)
@@ -138,6 +142,7 @@ Phase 1 (Requirements) has been successfully completed for the Lumos project, an
 - Configuration files
 
 **macOS Keychain**:
+
 - Encryption keys (AES-256-GCM)
 - API keys (cloud models)
 - MCP server credentials
@@ -182,18 +187,22 @@ Phase 1 (Requirements) has been successfully completed for the Lumos project, an
 ### In Scope for Phase 1
 
 **Platform:**
+
 - ✅ macOS only (Electron-based desktop app)
 
 **AI Integration:**
+
 - ✅ Ollama (local evaluation LLM)
 - ✅ FluidAudio (macOS STT via Swift bridge)
 - ✅ Optional cloud models (Claude, GPT-4, ServiceNow LLM)
 
 **MCP Servers:**
+
 - ✅ Calendar integration (public MCP server)
 - ✅ Filesystem operations (public MCP server)
 
 **Core Features:**
+
 - ✅ Dual input modes (text + voice)
 - ✅ Fast path routing
 - ✅ Policy-based governance
@@ -202,16 +211,19 @@ Phase 1 (Requirements) has been successfully completed for the Lumos project, an
 - ✅ Rollback capability
 
 **Authentication:**
+
 - ✅ Local accounts (username/password)
 - ✅ bcrypt password hashing
 - ✅ Session management
 
 **Data Domains:**
+
 - ✅ Personal data (calendar, filesystem, notes)
 
 ### Out of Scope for Phase 1
 
 **Deferred to Phase 2+:**
+
 - ❌ ServiceNow MCP integration
 - ❌ Enterprise data domain
 - ❌ Advanced meeting analysis
@@ -227,30 +239,37 @@ Phase 1 (Requirements) has been successfully completed for the Lumos project, an
 The following architectural decisions must be resolved in Phase 2 (Planning):
 
 ### 1. Swift-Electron Bridge Design
+
 **Challenge:** FluidAudio is macOS-specific, requires Swift integration
 **Options:**
+
 - Native Node module (N-API)
 - IPC bridge with separate Swift process
 - Electron native module wrapper
 
 **Considerations:**
+
 - Performance (audio streaming)
 - Memory management
 - Lifecycle (start/stop recording)
 - Error handling and recovery
 
 ### 2. Ollama Constrained JSON Configuration
+
 **Challenge:** Ensure structured proposal output
 **Requirement:** Grammar-based constrained decoding
 **Considerations:**
+
 - Ollama API `format` parameter usage
 - Schema validation fallback
 - Error recovery on malformed JSON
 - Model compatibility (qwen3-vl-4b)
 
 ### 3. MCP Server Management
+
 **Challenge:** Register, configure, and manage multiple MCP servers
 **Considerations:**
+
 - Server discovery and registration
 - Credential management (keychain)
 - Health checks and failover
@@ -258,57 +277,70 @@ The following architectural decisions must be resolved in Phase 2 (Planning):
 - Custom server support
 
 ### 4. Policy Engine Performance
+
 **Challenge:** Achieve <50ms evaluation time
 **Considerations:**
+
 - Skill matching optimization
 - Constraint compilation vs interpretation
 - Caching strategy (memoization)
 - Hot path optimization for common operations
 
 ### 5. Rollback Mechanism Design
+
 **Challenge:** Implement per-operation rollback strategies
 **Types:**
+
 - FULL: Complete undo (e.g., delete created event)
 - PARTIAL: Best-effort undo (e.g., reset modified fields)
 - COMPENSATABLE: Compensation action (e.g., reverse transaction)
 - IRREVERSIBLE: No rollback (e.g., email sent)
 
 **Considerations:**
+
 - State capture before execution
 - Undo stack design
 - Multi-step operation rollback
 - Error handling during rollback
 
 ### 6. Encryption Key Management
+
 **Challenge:** Secure key generation, storage, rotation
 **Requirements:**
+
 - AES-256-GCM encryption
 - macOS Keychain integration
 - First-run key generation
 
 **Considerations:**
+
 - Key rotation schedule
 - Backup and recovery
 - Key compromise handling
 - User vs system keys
 
 ### 7. Trust Level State Machine
+
 **Challenge:** Define exact promotion/demotion rules
 **Requirements:**
+
 - OBSERVE → SUPERVISED: User request (immediate)
 - SUPERVISED → DELEGATED: 10+ successes, no rollbacks
 - DELEGATED → SUPERVISED: On rollback (automatic)
 - Attestation: 30 days, 7-day grace period
 
 **Considerations:**
+
 - Attestation UX flow
 - Grace period handling
 - Bulk attestation for multiple operations
 - Attestation history tracking
 
 ### 8. Module Decomposition
+
 **Challenge:** Break system into implementable modules
 **Considerations:**
+
 - Service boundaries and interfaces
 - Dependency injection strategy
 - Testing seams (mocking)
@@ -321,26 +353,26 @@ The following architectural decisions must be resolved in Phase 2 (Planning):
 
 ### Requirements Quality
 
-| Criterion | Rating | Assessment |
-|-----------|--------|------------|
+| Criterion        | Rating     | Assessment                                               |
+| ---------------- | ---------- | -------------------------------------------------------- |
 | **Completeness** | ⭐⭐⭐⭐⭐ | All system components specified with detailed interfaces |
-| **Clarity** | ⭐⭐⭐⭐⭐ | TypeScript interfaces, clear service responsibilities |
-| **Consistency** | ⭐⭐⭐⭐⭐ | Uniform terminology, consistent data model usage |
-| **Testability** | ⭐⭐⭐⭐⭐ | Acceptance criteria implicit in constraints |
-| **Feasibility** | ⭐⭐⭐⭐ | High feasibility, some technical risks to validate |
-| **Traceability** | ⭐⭐⭐⭐⭐ | Clear mapping between requirements and components |
+| **Clarity**      | ⭐⭐⭐⭐⭐ | TypeScript interfaces, clear service responsibilities    |
+| **Consistency**  | ⭐⭐⭐⭐⭐ | Uniform terminology, consistent data model usage         |
+| **Testability**  | ⭐⭐⭐⭐⭐ | Acceptance criteria implicit in constraints              |
+| **Feasibility**  | ⭐⭐⭐⭐   | High feasibility, some technical risks to validate       |
+| **Traceability** | ⭐⭐⭐⭐⭐ | Clear mapping between requirements and components        |
 
 **Overall Requirements Quality:** 9.7/10 - Excellent
 
 ### Identified Risks
 
-| Risk | Severity | Probability | Mitigation Strategy |
-|------|----------|-------------|---------------------|
-| FluidAudio Swift bridge complexity | Medium | Medium | Spike in Phase 2, fallback to text-only |
-| Ollama constrained JSON reliability | Medium | Low | Validate in Phase 2, implement fallback parser |
-| Policy engine performance at scale | Low | Low | Profile early, implement caching |
-| MCP server availability | Low | Low | Graceful degradation, error messages |
-| Swift-Electron lifecycle management | Medium | Medium | Research existing patterns, spike validation |
+| Risk                                | Severity | Probability | Mitigation Strategy                            |
+| ----------------------------------- | -------- | ----------- | ---------------------------------------------- |
+| FluidAudio Swift bridge complexity  | Medium   | Medium      | Spike in Phase 2, fallback to text-only        |
+| Ollama constrained JSON reliability | Medium   | Low         | Validate in Phase 2, implement fallback parser |
+| Policy engine performance at scale  | Low      | Low         | Profile early, implement caching               |
+| MCP server availability             | Low      | Low         | Graceful degradation, error messages           |
+| Swift-Electron lifecycle management | Medium   | Medium      | Research existing patterns, spike validation   |
 
 ---
 
@@ -348,12 +380,12 @@ The following architectural decisions must be resolved in Phase 2 (Planning):
 
 ### Documentation Artifacts
 
-| Document | Lines | Status | Location |
-|----------|-------|--------|----------|
-| Requirements v0.2 | 2,274 | ✅ | [docs/requirements/requirement_v02.md](../requirements/requirement_v02.md) |
-| Phase 1 Completion | ~400 | ✅ | [docs/specifications/phase-1-completion.md](../specifications/phase-1-completion.md) |
-| Phase 2 Handoff | ~600 | ✅ | [docs/specifications/phase-2-handoff.md](../specifications/phase-2-handoff.md) |
-| Recovery Checkpoint | ~100 | ✅ | [docs/implementation/.recovery-checkpoint.md](../implementation/.recovery-checkpoint.md) |
+| Document            | Lines | Status | Location                                                                                 |
+| ------------------- | ----- | ------ | ---------------------------------------------------------------------------------------- |
+| Requirements v0.2   | 2,274 | ✅     | [docs/requirements/requirement_v02.md](../requirements/requirement_v02.md)               |
+| Phase 1 Completion  | ~400  | ✅     | [docs/specifications/phase-1-completion.md](../specifications/phase-1-completion.md)     |
+| Phase 2 Handoff     | ~600  | ✅     | [docs/specifications/phase-2-handoff.md](../specifications/phase-2-handoff.md)           |
+| Recovery Checkpoint | ~100  | ✅     | [docs/implementation/.recovery-checkpoint.md](../implementation/.recovery-checkpoint.md) |
 
 ### Technical Specifications Included
 
@@ -373,6 +405,7 @@ The following architectural decisions must be resolved in Phase 2 (Planning):
 ### Recommended Next Steps
 
 **1. Phase 2: Planning & Architecture**
+
 - Create technical blueprint
 - Validate technology choices (spikes)
 - Decompose into modules and tasks
@@ -383,6 +416,7 @@ The following architectural decisions must be resolved in Phase 2 (Planning):
 **2. Recommended Model: Claude Opus 4.5**
 
 **Justification:**
+
 - Complex architectural reasoning required (dual-LLM, policy engine, trust system)
 - Strict governance/security constraints must be architecturally guaranteed
 - Multiple integration points need careful planning (Ollama, Swift, MCP, Electron)
@@ -391,6 +425,7 @@ The following architectural decisions must be resolved in Phase 2 (Planning):
 - Need to identify edge cases and design comprehensive rollback mechanisms
 
 **Cost-Benefit:**
+
 - Opus Phase 2: ~$5-10 (200K tokens @ ~$15/1M input)
 - Risk of mistakes: Very high (security, governance, novel design)
 - Cost of rework: Extremely high (affects all subsequent phases)
@@ -399,6 +434,7 @@ The following architectural decisions must be resolved in Phase 2 (Planning):
 **3. Key Planning Deliverables**
 
 Must produce in Phase 2:
+
 - [ ] Technical blueprint (architecture document)
 - [ ] Component dependency graph
 - [ ] Technology validation results (Ollama, Swift bridge, MCP)
@@ -429,6 +465,7 @@ Must produce in Phase 2:
 ### Phase 1 Token Usage
 
 **Session:**
+
 - Model: Claude Sonnet 4.5 (1M context)
 - Tokens Used: ~52K tokens
 - Efficiency: 5.2% of available context
@@ -443,12 +480,14 @@ Must produce in Phase 2:
 **Recommended Model:** Claude Opus 4.5 (1M context)
 
 **Estimated Usage:**
+
 - Planning tasks: 10-15 tasks
 - Per-task average: 10K-20K tokens
 - Total estimate: 150K-300K tokens
 - Sessions needed: 1-2 sessions
 
 **Cost Estimate (Opus 4.5):**
+
 - Input: ~200K tokens @ $15/1M = $3
 - Output: ~50K tokens @ $75/1M = $3.75
 - **Total: ~$6-7 for Phase 2**
@@ -535,4 +574,4 @@ Read [.CodeMaestro/prompts/02-planning.md](../../.CodeMaestro/prompts/02-plannin
 
 ---
 
-*This completion report marks the successful conclusion of Phase 1 (Requirements) for the Lumos AI Work Assistant project. Phase 2 (Planning & Architecture) is ready to commence.*
+_This completion report marks the successful conclusion of Phase 1 (Requirements) for the Lumos AI Work Assistant project. Phase 2 (Planning & Architecture) is ready to commence._

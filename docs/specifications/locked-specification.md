@@ -14,6 +14,7 @@ The complete specification for this project is contained in:
 **[../requirements/requirements.md](../requirements/requirements.md)**
 
 This document contains 2,274 lines of detailed specifications including:
+
 - System Overview and Non-Negotiable Rules
 - Data Models (12 TypeScript interfaces)
 - Core Services (8 service definitions)
@@ -83,11 +84,11 @@ This document contains 2,274 lines of detailed specifications including:
 
 ### Storage Layer
 
-| Type | Location | Purpose |
-|------|----------|---------|
-| SQLite | ~/Library/Application Support/AIWorkAssistant/runtime.db | Runtime data |
-| Filesystem | ~/Library/Application Support/AIWorkAssistant/ | Human-editable content |
-| macOS Keychain | System keychain | Sensitive credentials |
+| Type           | Location                                                 | Purpose                |
+| -------------- | -------------------------------------------------------- | ---------------------- |
+| SQLite         | ~/Library/Application Support/AIWorkAssistant/runtime.db | Runtime data           |
+| Filesystem     | ~/Library/Application Support/AIWorkAssistant/           | Human-editable content |
+| macOS Keychain | System keychain                                          | Sensitive credentials  |
 
 ### UI Components (5)
 
@@ -124,13 +125,13 @@ This document contains 2,274 lines of detailed specifications including:
 
 ## Performance Requirements
 
-| Metric | Target |
-|--------|--------|
-| Fast path classification | <10ms |
-| Proposal generation | 2-3 seconds |
-| Policy evaluation | <50ms |
-| Transcription delay | <5 seconds |
-| SQLite queries | <100ms |
+| Metric                   | Target      |
+| ------------------------ | ----------- |
+| Fast path classification | <10ms       |
+| Proposal generation      | 2-3 seconds |
+| Policy evaluation        | <50ms       |
+| Transcription delay      | <5 seconds  |
+| SQLite queries           | <100ms      |
 
 ---
 
@@ -149,6 +150,7 @@ This document contains 2,274 lines of detailed specifications including:
 This specification is **LOCKED** as of 2026-01-28.
 
 Changes to this specification require:
+
 1. Formal change request
 2. Impact analysis
 3. Version increment

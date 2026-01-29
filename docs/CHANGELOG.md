@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+
 - Initial project setup
 
 ### Changed
@@ -24,17 +25,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [X.Y.Z] - YYYY-MM-DD
 
 ### Added
+
 - New features and capabilities
 
 ### Changed
+
 - Changes to existing functionality
 
 ### Fixed
+
 - Bug fixes
 
 ### Removed
+
 - Removed features or functionality
 
 ### Security
+
 - Security fixes and improvements
 ```

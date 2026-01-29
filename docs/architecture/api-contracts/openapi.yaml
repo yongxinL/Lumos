@@ -843,7 +843,18 @@ components:
     # Skill Types
     Skill:
       type: object
-      required: [id, name, version_hash, status, origin, enabled_operations, required_trust_level, priority, data_domain]
+      required:
+        [
+          id,
+          name,
+          version_hash,
+          status,
+          origin,
+          enabled_operations,
+          required_trust_level,
+          priority,
+          data_domain,
+        ]
       properties:
         id:
           type: string

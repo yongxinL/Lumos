@@ -14,6 +14,7 @@ This directory contains portfolio-ready documentation for showcasing this projec
 ## Usage
 
 These documents are generated during Phase 5 and can be used for:
+
 - Technical blog posts
 - Conference talks
 - Portfolio websites

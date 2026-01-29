@@ -59,6 +59,7 @@ This project follows CodeMaestro's documentation-driven architecture. Key framew
 ### Phase Prompts
 
 Located in [.CodeMaestro/prompts/](.CodeMaestro/prompts/):
+
 - `01-requirements.md` - Requirements gathering phase
 - `02-planning.md` - Architecture and planning phase
 - `03-implementation.md` - Development phase
@@ -68,6 +69,7 @@ Located in [.CodeMaestro/prompts/](.CodeMaestro/prompts/):
 ### Specialized Agents
 
 Located in [.CodeMaestro/agents/](.CodeMaestro/agents/):
+
 - `product-manager.md` - Requirements and competitive analysis
 - `architect.md` - System design and technical decisions
 - `developer.md` - Production code development
@@ -81,19 +83,20 @@ Located in [.CodeMaestro/agents/](.CodeMaestro/agents/):
 
 CodeMaestro uses natural language for interactions:
 
-| Intent | Example |
-|--------|---------|
+| Intent                | Example                                 |
+| --------------------- | --------------------------------------- |
 | Search knowledge base | "Search the knowledge base for [topic]" |
-| Generate commit | "Generate a commit for my changes" |
-| Generate tests | "Generate test stubs for AC-1.2" |
-| Show status | "What's my current progress?" |
-| Next task | "What should I work on next?" |
-| Verify changes | "Verify my changes" |
-| Invoke agent | "Review this code" (code-reviewer) |
+| Generate commit       | "Generate a commit for my changes"      |
+| Generate tests        | "Generate test stubs for AC-1.2"        |
+| Show status           | "What's my current progress?"           |
+| Next task             | "What should I work on next?"           |
+| Verify changes        | "Verify my changes"                     |
+| Invoke agent          | "Review this code" (code-reviewer)      |
 
 ### Git Workflow
 
 Branch strategy (git-flow variant):
+
 - `main` - Production-ready code
 - `develop` - Integration branch
 - `feature/*` - Milestone features
@@ -102,6 +105,7 @@ Branch strategy (git-flow variant):
 - `hotfix/*` - Emergency fixes
 
 Version tagging:
+
 - `v0.1.x-spec` - Specification versions
 - `v0.2.x-plan` - Planning versions
 - `v0.3.x-impl` - Implementation versions
@@ -111,6 +115,7 @@ Version tagging:
 ### Quality Gates
 
 Non-negotiable thresholds enforced at phase boundaries:
+
 - Test Coverage: ≥70%
 - Security Issues: 0 critical/high
 - Acceptance Criteria Pass Rate: 100%
@@ -130,6 +135,7 @@ See [.CodeMaestro/config/quality-gates.md](.CodeMaestro/config/quality-gates.md)
 ### ServiceNow Integration
 
 When implementing Lumos features:
+
 - Follow ServiceNow REST API best practices
 - Implement proper authentication and authorization
 - Handle ServiceNow rate limits appropriately
@@ -139,6 +145,7 @@ When implementing Lumos features:
 ### AI Assistant Features
 
 Core capabilities to implement:
+
 - Task automation workflows
 - Natural language query processing
 - Insight generation from ServiceNow data
@@ -148,6 +155,7 @@ Core capabilities to implement:
 ### Security Requirements
 
 Given ServiceNow integration:
+
 - Never log sensitive ServiceNow data (credentials, tokens, user data)
 - Implement proper OAuth2 flows for ServiceNow authentication
 - Validate all inputs to prevent injection attacks

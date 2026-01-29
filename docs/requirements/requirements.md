@@ -55,7 +55,7 @@ Build a **desktop-first AI Work Assistant** that operates as a **governed AI ope
 
 ### 2.1 Core Types
 
-```typescript
+````typescript
 type ISO8601String = string; // e.g., "2025-01-28T10:30:00Z"
 type VersionHash = string;   // SHA256 content hash
 
@@ -78,7 +78,7 @@ interface EntityReference {
   id: string;
   source: string;         // e.g., "servicenow", "calendar", "local"
 }
-```
+````
 
 ### 2.3 Skill Reference
 
@@ -114,16 +114,16 @@ type OperationType =
 interface ActionProposal {
   id: string;
   timestamp: ISO8601String;
-  intent: string;                    // Human-readable description
+  intent: string; // Human-readable description
   operation: OperationType;
   target_entity: EntityReference | null;
   data_domain: DataDomain;
   data_classification: DataClassification;
   reversibility: RollbackType;
-  confidence: number;                // 0.0 - 1.0
+  confidence: number; // 0.0 - 1.0
   related_skills: SkillReference[];
   rollback_plan: RollbackPlan | null;
-  evaluation_model: string;          // Model that generated this proposal
+  evaluation_model: string; // Model that generated this proposal
   raw_user_input: string;
   requires_confirmation: boolean;
   risk_level: 'low' | 'medium' | 'high';
@@ -135,9 +135,9 @@ interface ActionProposal {
 ```typescript
 interface RollbackPlan {
   type: RollbackType;
-  method: string;                    // Description of rollback approach
+  method: string; // Description of rollback approach
   steps: RollbackStep[];
-  estimated_success_rate: number;    // 0.0 - 1.0
+  estimated_success_rate: number; // 0.0 - 1.0
 }
 
 interface RollbackStep {
@@ -147,7 +147,6 @@ interface RollbackStep {
 }
 ```
 
-
 ### 2.7 Skill Definition
 
 ```typescript
@@ -155,16 +154,16 @@ interface Skill {
   id: string;
   name: string;
   description: string;
-  version_hash: VersionHash;         // SHA256(canonical JSON) - immutable
+  version_hash: VersionHash; // SHA256(canonical JSON) - immutable
   status: SkillStatus;
   origin: SkillOrigin;
   enabled_operations: OperationType[];
   policy_constraints: PolicyConstraint[];
   required_trust_level: TrustLevel;
-  priority: number;                  // Higher = evaluated first
+  priority: number; // Higher = evaluated first
   data_domain: DataDomain | 'both';
   conflict_resolution: ConflictResolution;
-  proposal_schema: JSONSchema;       // JSON Schema for proposal validation
+  proposal_schema: JSONSchema; // JSON Schema for proposal validation
   rollback_specification: RollbackSpec;
   created_at: ISO8601String;
   activated_at: ISO8601String | null;
@@ -173,14 +172,14 @@ interface Skill {
 
 interface PolicyConstraint {
   type: 'precondition' | 'invariant' | 'postcondition';
-  rule: string;                      // TypeScript expression as string
+  rule: string; // TypeScript expression as string
   error_message: string;
 }
 
 interface RollbackSpec {
   type: RollbackType;
   method: string;
-  compensation_action?: string;      // For COMPENSATABLE type
+  compensation_action?: string; // For COMPENSATABLE type
 }
 
 type JSONSchema = Record<string, unknown>;
@@ -203,12 +202,11 @@ interface Policy {
 
 interface PolicyRule {
   id: string;
-  condition: string;                 // TypeScript expression
+  condition: string; // TypeScript expression
   action: 'allow' | 'deny' | 'require_confirmation';
   message: string;
 }
 ```
-
 
 ### 2.9 Trust Level Record
 
@@ -244,10 +242,10 @@ interface AuditRecord {
   };
   skill_version: VersionHash | null;
   model_used: string | null;
-  input_hash: string;                // Hash of user input for privacy
+  input_hash: string; // Hash of user input for privacy
   outcome: ActionOutcome;
   metadata: Record<string, unknown>;
-  rollback_of?: string;              // ID of audit record this rolled back
+  rollback_of?: string; // ID of audit record this rolled back
 }
 ```
 
@@ -260,7 +258,7 @@ interface UserPreferences {
   allowed_cloud_models: string[];
   default_data_domain: DataDomain;
   stt_enabled: boolean;
-  stt_auto_submit: boolean;          // Auto-submit after silence
+  stt_auto_submit: boolean; // Auto-submit after silence
   theme: 'light' | 'dark' | 'system';
   keyboard_shortcuts_enabled: boolean;
   high_contrast_mode: boolean;
@@ -283,12 +281,11 @@ interface MeetingTranscript {
 
 interface TranscriptSegment {
   timestamp: ISO8601String;
-  speaker: string | null;            // Speaker identification (if available)
+  speaker: string | null; // Speaker identification (if available)
   text: string;
   confidence: number;
 }
 ```
-
 
 ---
 
@@ -353,12 +350,12 @@ User Input (Text / Audio)
 └─────────────────────────────┘
 ```
 
-
 ### 3.2 Input Handler Service
 
 **Purpose**: Process user input from text and audio sources.
 
 **Responsibilities**:
+
 1. Receive text input from chat interface
 2. Receive audio stream from microphone
 3. Invoke FluidAudio for speech-to-text (macOS Swift bridge)
@@ -372,13 +369,13 @@ User Input (Text / Audio)
 interface InputHandlerService {
   // Text input
   submitText(text: string): Promise<ProcessedInput>;
-  
+
   // Audio input
   startRecording(): Promise<void>;
   stopRecording(): Promise<TranscriptionPreview>;
   confirmTranscription(preview: TranscriptionPreview): Promise<ProcessedInput>;
   cancelTranscription(): void;
-  
+
   // Events
   onTranscriptionUpdate(callback: (partial: string) => void): void;
   onRecordingStateChange(callback: (state: RecordingState) => void): void;
@@ -410,14 +407,14 @@ interface FluidAudioBridge {
   startCapture(options: CaptureOptions): Promise<void>;
   stopCapture(): Promise<AudioBuffer>;
   transcribe(audio: AudioBuffer): Promise<TranscriptionResult>;
-  
+
   // Real-time streaming
   onPartialTranscript(callback: (text: string) => void): void;
 }
 
 interface CaptureOptions {
-  sampleRate: number;      // Default: 16000
-  channels: number;        // Default: 1 (mono)
+  sampleRate: number; // Default: 16000
+  channels: number; // Default: 1 (mono)
 }
 
 interface TranscriptionResult {
@@ -431,12 +428,12 @@ interface TranscriptionResult {
 }
 ```
 
-
 ### 3.3 Fast Path Service
 
 **Purpose**: Reduce latency by bypassing Evaluation LLM for non-action queries.
 
 **Responsibilities**:
+
 1. Classify input as action vs non-action
 2. Route non-action queries directly to Expert AI
 3. Route action queries to Evaluation LLM
@@ -460,10 +457,10 @@ interface FastPathResult {
 const NON_ACTION_PATTERNS = [
   // Questions seeking information
   /^(what|why|how|when|where|who|which|explain|describe|tell me about)\b/i,
-  
+
   // Clarification requests
   /^(can you|could you|would you)?\s*(clarify|explain|elaborate|help me understand)/i,
-  
+
   // General knowledge
   /^(what is|what are|what's|whats|define|meaning of)\b/i,
 ];
@@ -471,10 +468,10 @@ const NON_ACTION_PATTERNS = [
 const ACTION_PATTERNS = [
   // Direct commands
   /^(create|update|delete|remove|add|send|schedule|assign|close|resolve|reopen)\b/i,
-  
+
   // Requests for action
   /^(please|can you|could you|would you)?\s*(create|update|delete|send|schedule)/i,
-  
+
   // Task references
   /\b(ticket|incident|task|event|meeting|appointment)\b.*\b(create|update|close|assign)/i,
 ];
@@ -487,18 +484,19 @@ const ACTION_PATTERNS = [
 
 **Performance Target**: < 10ms classification time
 
-
 ### 3.4 Evaluation LLM Service
 
 **Purpose**: Extract intent and generate structured action proposals from user input.
 
 **Responsibilities**:
+
 1. Process action-classified input
 2. Generate structured JSON proposals using constrained decoding
 3. Validate proposal against schema
 4. Return proposal for policy evaluation
 
 **Requirements**:
+
 - **Local execution only** (Ollama / LM Studio)
 - **Constrained JSON decoding** (grammar-based generation)
 - No tool execution capability
@@ -516,10 +514,10 @@ interface EvaluationLLMService {
 
 interface EvaluationLLMConfig {
   provider: 'ollama' | 'lmstudio';
-  model_name: string;                // e.g., "qwen3-vl-4b"
-  endpoint: string;                  // e.g., "http://localhost:11434"
-  timeout_ms: number;                // Default: 30000
-  proposal_schema: JSONSchema;       // For constrained decoding
+  model_name: string; // e.g., "qwen3-vl-4b"
+  endpoint: string; // e.g., "http://localhost:11434"
+  timeout_ms: number; // Default: 30000
+  proposal_schema: JSONSchema; // For constrained decoding
 }
 
 interface ModelInfo {
@@ -535,36 +533,41 @@ interface ModelInfo {
 ```typescript
 // Ollama format parameter for JSON schema
 const PROPOSAL_JSON_SCHEMA = {
-  type: "object",
+  type: 'object',
   required: [
-    "intent", "operation", "data_domain", "data_classification",
-    "reversibility", "confidence", "risk_level"
+    'intent',
+    'operation',
+    'data_domain',
+    'data_classification',
+    'reversibility',
+    'confidence',
+    'risk_level',
   ],
   properties: {
-    intent: { type: "string", description: "Human-readable action description" },
-    operation: { type: "string", description: "Operation type identifier" },
+    intent: { type: 'string', description: 'Human-readable action description' },
+    operation: { type: 'string', description: 'Operation type identifier' },
     target_entity: {
-      type: ["object", "null"],
+      type: ['object', 'null'],
       properties: {
-        type: { type: "string" },
-        id: { type: "string" },
-        source: { type: "string" }
-      }
+        type: { type: 'string' },
+        id: { type: 'string' },
+        source: { type: 'string' },
+      },
     },
-    data_domain: { enum: ["enterprise", "personal"] },
-    data_classification: { enum: ["public", "internal", "confidential", "restricted"] },
-    reversibility: { enum: ["FULL", "PARTIAL", "COMPENSATABLE", "IRREVERSIBLE"] },
-    confidence: { type: "number", minimum: 0, maximum: 1 },
-    risk_level: { enum: ["low", "medium", "high"] },
+    data_domain: { enum: ['enterprise', 'personal'] },
+    data_classification: { enum: ['public', 'internal', 'confidential', 'restricted'] },
+    reversibility: { enum: ['FULL', 'PARTIAL', 'COMPENSATABLE', 'IRREVERSIBLE'] },
+    confidence: { type: 'number', minimum: 0, maximum: 1 },
+    risk_level: { enum: ['low', 'medium', 'high'] },
     rollback_plan: {
-      type: ["object", "null"],
+      type: ['object', 'null'],
       properties: {
-        type: { enum: ["FULL", "PARTIAL", "COMPENSATABLE", "IRREVERSIBLE"] },
-        method: { type: "string" },
-        steps: { type: "array" }
-      }
-    }
-  }
+        type: { enum: ['FULL', 'PARTIAL', 'COMPENSATABLE', 'IRREVERSIBLE'] },
+        method: { type: 'string' },
+        steps: { type: 'array' },
+      },
+    },
+  },
 };
 
 // Request to Ollama with constrained decoding
@@ -574,12 +577,11 @@ interface OllamaRequest {
   format: typeof PROPOSAL_JSON_SCHEMA;
   stream: false;
   options: {
-    temperature: 0.1;                // Low temperature for consistency
-    num_predict: 1000;               // Max tokens
+    temperature: 0.1; // Low temperature for consistency
+    num_predict: 1000; // Max tokens
   };
 }
 ```
-
 
 **System Prompt for Evaluation LLM**:
 
@@ -610,6 +612,7 @@ Analyze the following user input and return a structured proposal:
 **Unavailability Handling**:
 
 When local LLM is unavailable:
+
 1. Check connection to Ollama/LM Studio endpoint
 2. If connection fails, display error with installation instructions
 3. Provide link to Ollama download: https://ollama.ai
@@ -625,12 +628,12 @@ interface LLMUnavailableError {
 }
 ```
 
-
 ### 3.5 Policy Engine
 
 **Purpose**: Deterministically evaluate proposals against skills and policies.
 
 **Requirements**:
+
 - Implemented in TypeScript (no LLM)
 - Deterministic output for same input
 - Fast evaluation (< 50ms)
@@ -664,14 +667,10 @@ interface PolicyResult {
 **Evaluation Algorithm**:
 
 ```typescript
-function evaluateProposal(
-  proposal: ActionProposal,
-  context: EvaluationContext
-): PolicyResult {
+function evaluateProposal(proposal: ActionProposal, context: EvaluationContext): PolicyResult {
   // Step 1: Find all active skills where proposal.operation ∈ skill.enabled_operations
-  const matchingSkills = context.active_skills.filter(skill =>
-    skill.status === 'active' &&
-    skill.enabled_operations.includes(proposal.operation)
+  const matchingSkills = context.active_skills.filter(
+    (skill) => skill.status === 'active' && skill.enabled_operations.includes(proposal.operation)
   );
 
   // Step 2: If no skills match, DENY (no capability defined)
@@ -682,7 +681,7 @@ function evaluateProposal(
       matched_skill: null,
       rule_references: [],
       denial_reason: `No skill defines operation: ${proposal.operation}`,
-      trust_level_used: 'OBSERVE'
+      trust_level_used: 'OBSERVE',
     };
   }
 
@@ -698,7 +697,7 @@ function evaluateProposal(
         requires_confirmation: determineConfirmationRequired(skill, proposal, context),
         matched_skill: { id: skill.id, version_hash: skill.version_hash },
         rule_references: skillResult.rule_references,
-        trust_level_used: context.trust_levels.get(proposal.operation) || 'OBSERVE'
+        trust_level_used: context.trust_levels.get(proposal.operation) || 'OBSERVE',
       };
     }
   }
@@ -710,10 +709,9 @@ function evaluateProposal(
     matched_skill: null,
     rule_references: [],
     denial_reason: 'All matching skills failed policy constraints',
-    trust_level_used: 'OBSERVE'
+    trust_level_used: 'OBSERVE',
   };
 }
-
 
 function evaluateSkill(
   skill: Skill,
@@ -779,14 +777,13 @@ function determineConfirmationRequired(
 // Trust level hierarchy: OBSERVE < SUPERVISED < DELEGATED
 function isTrustLevelSufficient(userLevel: TrustLevel, requiredLevel: TrustLevel): boolean {
   const hierarchy: Record<TrustLevel, number> = {
-    'OBSERVE': 0,
-    'SUPERVISED': 1,
-    'DELEGATED': 2
+    OBSERVE: 0,
+    SUPERVISED: 1,
+    DELEGATED: 2,
   };
   return hierarchy[userLevel] >= hierarchy[requiredLevel];
 }
 ```
-
 
 **Conflict Resolution**:
 
@@ -807,7 +804,7 @@ function resolveConflicts(
   }
 
   // Tie-breaker: more specific skill (fewer enabled_operations)
-  const sameTopPriority = sorted.filter(s => s.priority === sorted[0].priority);
+  const sameTopPriority = sorted.filter((s) => s.priority === sorted[0].priority);
   const mostSpecific = sameTopPriority.sort(
     (a, b) => a.enabled_operations.length - b.enabled_operations.length
   );
@@ -832,18 +829,19 @@ interface ConflictResolutionRequired {
 }
 ```
 
-
 ### 3.6 Expert AI Service
 
 **Purpose**: Complex reasoning, action planning, and response generation.
 
 **Responsibilities**:
+
 1. Process non-action queries (via fast path)
 2. Generate detailed action plans for approved proposals
 3. Create rollback plans
 4. Provide conversational responses
 
 **Requirements**:
+
 - User-selectable model (local or cloud)
 - Cannot bypass policy engine
 - All model routing decisions logged
@@ -907,22 +905,22 @@ const DEFAULT_LOCAL_MODELS: ModelOption[] = [
     name: 'Qwen 3 VL 4B',
     provider: 'local',
     type: 'ollama',
-    requires_api_key: false
+    requires_api_key: false,
   },
   {
     id: 'llama3.2',
     name: 'Llama 3.2',
     provider: 'local',
     type: 'ollama',
-    requires_api_key: false
+    requires_api_key: false,
   },
   {
     id: 'mistral',
     name: 'Mistral',
     provider: 'local',
     type: 'ollama',
-    requires_api_key: false
-  }
+    requires_api_key: false,
+  },
 ];
 
 const DEFAULT_CLOUD_MODELS: ModelOption[] = [
@@ -932,7 +930,7 @@ const DEFAULT_CLOUD_MODELS: ModelOption[] = [
     provider: 'cloud',
     type: 'claude',
     endpoint: 'https://api.anthropic.com/v1/messages',
-    requires_api_key: true
+    requires_api_key: true,
   },
   {
     id: 'gpt-4',
@@ -940,24 +938,24 @@ const DEFAULT_CLOUD_MODELS: ModelOption[] = [
     provider: 'cloud',
     type: 'openai',
     endpoint: 'https://api.openai.com/v1/chat/completions',
-    requires_api_key: true
+    requires_api_key: true,
   },
   {
     id: 'servicenow-llm',
     name: 'ServiceNow LLM',
     provider: 'cloud',
     type: 'servicenow',
-    requires_api_key: true
-  }
+    requires_api_key: true,
+  },
 ];
 ```
-
 
 ### 3.7 Execution Layer
 
 **Purpose**: Execute approved actions via MCP tools.
 
 **Responsibilities**:
+
 1. Invoke MCP tools based on action plan
 2. Capture execution results
 3. Handle execution errors
@@ -1016,25 +1014,25 @@ interface MCPTool {
   server: string;
   capabilities: string[];
   default_data_domain: DataDomain;
-  skill_required: string;            // Skill ID that governs this tool
+  skill_required: string; // Skill ID that governs this tool
 }
 
 // Phase 1 registered tools
 const REGISTERED_TOOLS: MCPTool[] = [
   {
     name: 'calendar',
-    server: 'mcp-calendar',          // Public MCP server
+    server: 'mcp-calendar', // Public MCP server
     capabilities: ['read_events', 'create_event', 'update_event', 'delete_event'],
     default_data_domain: 'personal',
-    skill_required: 'calendar-operations'
+    skill_required: 'calendar-operations',
   },
   {
     name: 'filesystem',
-    server: 'mcp-filesystem',        // Public MCP server
+    server: 'mcp-filesystem', // Public MCP server
     capabilities: ['read_file', 'write_file', 'list_directory'],
     default_data_domain: 'personal',
-    skill_required: 'filesystem-operations'
-  }
+    skill_required: 'filesystem-operations',
+  },
   // ServiceNow MCP: Phase 2
 ];
 
@@ -1047,16 +1045,16 @@ interface MCPInvocation {
 
 // Unregistered tools cannot be invoked (fail-safe)
 function canInvokeTool(toolName: string): boolean {
-  return REGISTERED_TOOLS.some(t => t.name === toolName);
+  return REGISTERED_TOOLS.some((t) => t.name === toolName);
 }
 ```
-
 
 ### 3.8 Audit Service
 
 **Purpose**: Maintain append-only log of all significant events.
 
 **Responsibilities**:
+
 1. Log all proposals, policy decisions, executions, rollbacks
 2. Provide queryable audit history
 3. Support audit export
@@ -1085,18 +1083,18 @@ interface AuditFilter {
 
 **What Must Be Logged**:
 
-| Event | Action Type | Required Fields |
-|-------|-------------|-----------------|
-| User input received | `user_input` | input_hash, source |
-| Fast path classification | `fast_path_classification` | result, matched_pattern |
-| Proposal generated | `proposal_generated` | proposal_id, model_used |
-| Policy evaluation | `policy_evaluated` | proposal_id, policy_result |
-| User confirmation | `user_confirmed` or `user_denied` | proposal_id |
-| Action executed | `action_executed` | proposal_id, result |
-| Rollback performed | `action_rolled_back` | original_action_id, result |
-| Trust level changed | `trust_level_changed` | operation, old_level, new_level |
-| Skill activated | `skill_activated` | skill_id, version_hash |
-| Model switched | `model_switched` | old_model, new_model |
+| Event                    | Action Type                       | Required Fields                 |
+| ------------------------ | --------------------------------- | ------------------------------- |
+| User input received      | `user_input`                      | input_hash, source              |
+| Fast path classification | `fast_path_classification`        | result, matched_pattern         |
+| Proposal generated       | `proposal_generated`              | proposal_id, model_used         |
+| Policy evaluation        | `policy_evaluated`                | proposal_id, policy_result      |
+| User confirmation        | `user_confirmed` or `user_denied` | proposal_id                     |
+| Action executed          | `action_executed`                 | proposal_id, result             |
+| Rollback performed       | `action_rolled_back`              | original_action_id, result      |
+| Trust level changed      | `trust_level_changed`             | operation, old_level, new_level |
+| Skill activated          | `skill_activated`                 | skill_id, version_hash          |
+| Model switched           | `model_switched`                  | old_model, new_model            |
 
 **Audit Integrity**:
 
@@ -1109,10 +1107,9 @@ interface AuditFilter {
 // Record linking
 interface AuditChain {
   original_id: string;
-  related_ids: string[];            // All records in the action chain
+  related_ids: string[]; // All records in the action chain
 }
 ```
-
 
 ### 3.9 Trust Management Service
 
@@ -1155,15 +1152,15 @@ const PROMOTION_RULES = {
   OBSERVE_TO_SUPERVISED: {
     requires_success_count: 0,
     requires_no_rollbacks: false,
-    auto_promote: false              // Always requires user action
+    auto_promote: false, // Always requires user action
   },
 
   // SUPERVISED → DELEGATED: Requires track record
   SUPERVISED_TO_DELEGATED: {
-    requires_success_count: 10,      // At least 10 successful approvals
-    requires_no_rollbacks: true,     // No rollbacks since last promotion
-    auto_promote: false              // User must explicitly request
-  }
+    requires_success_count: 10, // At least 10 successful approvals
+    requires_no_rollbacks: true, // No rollbacks since last promotion
+    auto_promote: false, // User must explicitly request
+  },
 };
 
 // Demotion rules
@@ -1173,10 +1170,10 @@ const DEMOTION_RULES = {
 
   // Automatic demotion on rollback
   on_rollback: {
-    DELEGATED: 'SUPERVISED',         // Demote one level
-    SUPERVISED: 'SUPERVISED',        // Stay at SUPERVISED
-    OBSERVE: 'OBSERVE'               // Stay at OBSERVE
-  }
+    DELEGATED: 'SUPERVISED', // Demote one level
+    SUPERVISED: 'SUPERVISED', // Stay at SUPERVISED
+    OBSERVE: 'OBSERVE', // Stay at OBSERVE
+  },
 };
 
 // Attestation rules
@@ -1188,10 +1185,9 @@ const ATTESTATION_RULES = {
   grace_period_days: 7,
 
   // Action on missed attestation
-  on_missed_attestation: 'SUPERVISED'  // Demote to SUPERVISED
+  on_missed_attestation: 'SUPERVISED', // Demote to SUPERVISED
 };
 ```
-
 
 ---
 
@@ -1199,11 +1195,11 @@ const ATTESTATION_RULES = {
 
 ### 4.1 Overview
 
-| Storage Type | Location | Purpose |
-|--------------|----------|---------|
-| SQLite | `~/Library/Application Support/AIWorkAssistant/runtime.db` | Runtime data |
-| Filesystem | `~/Library/Application Support/AIWorkAssistant/` | Human-editable content |
-| macOS Keychain | System keychain | Sensitive credentials |
+| Storage Type   | Location                                                   | Purpose                |
+| -------------- | ---------------------------------------------------------- | ---------------------- |
+| SQLite         | `~/Library/Application Support/AIWorkAssistant/runtime.db` | Runtime data           |
+| Filesystem     | `~/Library/Application Support/AIWorkAssistant/`           | Human-editable content |
+| macOS Keychain | System keychain                                            | Sensitive credentials  |
 
 ### 4.2 SQLite Schema
 
@@ -1340,7 +1336,6 @@ CREATE INDEX idx_sessions_user ON sessions(user_id);
 CREATE INDEX idx_sessions_expires ON sessions(expires_at);
 ```
 
-
 ### 4.3 Filesystem Structure
 
 ```
@@ -1372,7 +1367,7 @@ CREATE INDEX idx_sessions_expires ON sessions(expires_at);
 id: calendar-operations
 name: Calendar Operations
 description: Manage calendar events
-version: "1.0.0"
+version: '1.0.0'
 origin: human
 status: active
 priority: 100
@@ -1387,16 +1382,16 @@ enabled_operations:
 policy_constraints:
   - type: precondition
     rule: "proposal.target_entity?.source === 'calendar'"
-    error_message: "Operation must target a calendar entity"
+    error_message: 'Operation must target a calendar entity'
   - type: precondition
     rule: "proposal.data_classification !== 'restricted'"
-    error_message: "Cannot perform calendar operations on restricted data"
+    error_message: 'Cannot perform calendar operations on restricted data'
 
 required_trust_level: SUPERVISED
 
 rollback_specification:
   type: FULL
-  method: "Delete created event or restore previous version"
+  method: 'Delete created event or restore previous version'
 
 proposal_schema:
   type: object
@@ -1421,7 +1416,6 @@ proposal_schema:
         source:
           const: calendar
 ```
-
 
 ### 4.5 Encryption Strategy
 
@@ -1466,16 +1460,16 @@ interface FieldEncryption {
 }
 
 interface EncryptedField {
-  iv: string;                        // Base64 encoded
-  data: string;                      // Base64 encoded ciphertext
+  iv: string; // Base64 encoded
+  data: string; // Base64 encoded ciphertext
   algorithm: 'aes-256-gcm';
-  auth_tag: string;                  // Base64 encoded
+  auth_tag: string; // Base64 encoded
 }
 
 // Fields that require encryption:
 const ENCRYPTED_FIELDS = [
   'meetings.transcript_encrypted',
-  'audit_log.metadata'               // When contains PII
+  'audit_log.metadata', // When contains PII
 ];
 ```
 
@@ -1484,7 +1478,7 @@ const ENCRYPTED_FIELDS = [
 ```typescript
 async function initializeEncryption(): Promise<void> {
   const keychain = getKeychainService();
-  
+
   let key = await keychain.getEncryptionKey();
   if (!key) {
     // Generate new 256-bit key
@@ -1493,7 +1487,6 @@ async function initializeEncryption(): Promise<void> {
   }
 }
 ```
-
 
 ### 4.6 Filesystem ↔ SQLite Sync
 
@@ -1554,7 +1547,6 @@ interface SyncConflict {
 │  └─────────┘  └──────────────────────────────────────────────┘ │
 └─────────────────────────────────────────────────────────────────┘
 ```
-
 
 ### 5.2 Chat View
 
@@ -1619,14 +1611,13 @@ interface ProposalDisplay {
 
 **Proposal Card States**:
 
-| State | Appearance | Actions Available |
-|-------|------------|-------------------|
-| pending | Yellow border | Approve, Deny |
-| approved | Green border, "Executing..." | Cancel (if possible) |
-| denied | Red border, "Denied" | None |
-| executed | Green border, "Completed" | Rollback (if reversible) |
-| failed | Red border, error message | Retry, Rollback |
-
+| State    | Appearance                   | Actions Available        |
+| -------- | ---------------------------- | ------------------------ |
+| pending  | Yellow border                | Approve, Deny            |
+| approved | Green border, "Executing..." | Cancel (if possible)     |
+| denied   | Red border, "Denied"         | None                     |
+| executed | Green border, "Completed"    | Rollback (if reversible) |
+| failed   | Red border, error message    | Retry, Rollback          |
 
 ### 5.3 Activity View
 
@@ -1702,7 +1693,6 @@ interface ActivityViewState {
 └─────────────────────────────────────────────────────────────┘
 ```
 
-
 ### 5.4 Permissions View
 
 **Purpose**: Trust level management per operation
@@ -1747,8 +1737,8 @@ interface TrustLevelOption {
   level: TrustLevel;
   label: string;
   description: string;
-  available: boolean;          // Based on promotion rules
-  reason?: string;             // Why unavailable
+  available: boolean; // Based on promotion rules
+  reason?: string; // Why unavailable
 }
 
 const TRUST_LEVEL_OPTIONS: TrustLevelOption[] = [
@@ -1756,24 +1746,23 @@ const TRUST_LEVEL_OPTIONS: TrustLevelOption[] = [
     level: 'OBSERVE',
     label: 'Observe Only',
     description: 'AI suggests, no actions taken',
-    available: true
+    available: true,
   },
   {
     level: 'SUPERVISED',
     label: 'Supervised',
     description: 'AI proposes, you approve each action',
-    available: true             // Always available
+    available: true, // Always available
   },
   {
     level: 'DELEGATED',
     label: 'Delegated',
     description: 'AI executes automatically (requires 10+ successes)',
-    available: false,           // Computed based on track record
-    reason: 'Requires 10 successful approvals with no rollbacks'
-  }
+    available: false, // Computed based on track record
+    reason: 'Requires 10 successful approvals with no rollbacks',
+  },
 ];
 ```
-
 
 ### 5.5 Skills View
 
@@ -1849,7 +1838,6 @@ const TRUST_LEVEL_OPTIONS: TrustLevelOption[] = [
 └─────────────────────────────────────────────────────────────┘
 ```
 
-
 ### 5.6 Settings View
 
 **Purpose**: Application configuration
@@ -1919,36 +1907,38 @@ const TRUST_LEVEL_OPTIONS: TrustLevelOption[] = [
 └─────────────────────────────────────────────────────────────┘
 ```
 
-
 ### 5.7 Accessibility Requirements
 
 **Keyboard Navigation**:
 
-| Shortcut | Action |
-|----------|--------|
+| Shortcut            | Action                              |
+| ------------------- | ----------------------------------- |
 | `Tab` / `Shift+Tab` | Navigate between focusable elements |
-| `Enter` | Activate focused button/link |
-| `Escape` | Close modal, cancel current action |
-| `Cmd+Enter` | Submit message |
-| `Cmd+Shift+A` | Start/stop audio recording |
-| `Cmd+1` | Switch to Chat view |
-| `Cmd+2` | Switch to Activity view |
-| `Cmd+3` | Switch to Permissions view |
-| `Cmd+4` | Switch to Skills view |
-| `Cmd+5` | Switch to Settings view |
-| `Arrow keys` | Navigate lists |
+| `Enter`             | Activate focused button/link        |
+| `Escape`            | Close modal, cancel current action  |
+| `Cmd+Enter`         | Submit message                      |
+| `Cmd+Shift+A`       | Start/stop audio recording          |
+| `Cmd+1`             | Switch to Chat view                 |
+| `Cmd+2`             | Switch to Activity view             |
+| `Cmd+3`             | Switch to Permissions view          |
+| `Cmd+4`             | Switch to Skills view               |
+| `Cmd+5`             | Switch to Settings view             |
+| `Arrow keys`        | Navigate lists                      |
 
 **Focus Management**:
+
 - Focus indicators must be visible on all interactive elements
 - Focus must be trapped within modals
 - Focus should return to trigger element when modal closes
 
 **High Contrast Mode**:
+
 - Minimum contrast ratio: 7:1 for text
 - Clear visual boundaries between UI sections
 - No color-only indicators (always include text/icon)
 
 **Large Text Mode**:
+
 - Base font size increases from 14px to 18px
 - All UI elements scale proportionally
 - No horizontal scrolling required
@@ -1970,7 +1960,7 @@ evaluation_llm:
 expert_ai:
   default: qwen3-vl-4b
   cloud_enabled: false
-  
+
   local_models:
     - id: qwen3-vl-4b
       name: Qwen 3 VL 4B
@@ -1981,7 +1971,7 @@ expert_ai:
     - id: mistral
       name: Mistral
       provider: ollama
-      
+
   cloud_models:
     - id: claude-sonnet
       name: Claude Sonnet
@@ -1999,7 +1989,6 @@ expert_ai:
       requires_api_key: true
 ```
 
-
 ### 6.2 MCP Server Configuration
 
 ```yaml
@@ -2007,7 +1996,7 @@ expert_ai:
 servers:
   - name: calendar
     type: public
-    package: "@anthropic/mcp-server-calendar"
+    package: '@anthropic/mcp-server-calendar'
     capabilities:
       - read_events
       - create_event
@@ -2015,10 +2004,10 @@ servers:
       - delete_event
     default_data_domain: personal
     skill_required: calendar-operations
-    
+
   - name: filesystem
     type: public
-    package: "@anthropic/mcp-server-filesystem"
+    package: '@anthropic/mcp-server-filesystem'
     capabilities:
       - read_file
       - write_file
@@ -2027,9 +2016,9 @@ servers:
     skill_required: filesystem-operations
     config:
       allowed_paths:
-        - "~/Documents"
-        - "~/Desktop"
-        - "~/Notes"
+        - '~/Documents'
+        - '~/Desktop'
+        - '~/Notes'
 
 # ServiceNow MCP: Phase 2
 # - name: servicenow
@@ -2051,25 +2040,24 @@ servers:
 app:
   name: AI Work Assistant
   version: 1.0.0
-  platform: darwin            # macOS only for Phase 1
-  
+  platform: darwin # macOS only for Phase 1
+
   paths:
     data: ~/Library/Application Support/AIWorkAssistant
     logs: ~/Library/Logs/AIWorkAssistant
-    
+
   auto_update:
     enabled: true
     check_interval_hours: 24
-    
+
   session:
-    timeout_minutes: 480      # 8 hours
-    
+    timeout_minutes: 480 # 8 hours
+
   performance:
     proposal_generation_timeout_ms: 3000
     transcription_max_delay_ms: 5000
     sqlite_query_timeout_ms: 100
 ```
-
 
 ---
 
@@ -2079,20 +2067,20 @@ app:
 
 ```typescript
 type ErrorCategory =
-  | 'input'           // User input processing
-  | 'llm'             // LLM-related errors
-  | 'policy'          // Policy engine errors
-  | 'execution'       // MCP tool execution
-  | 'storage'         // Database/filesystem
-  | 'network'         // Network connectivity
-  | 'auth'            // Authentication
-  | 'system';         // System-level errors
+  | 'input' // User input processing
+  | 'llm' // LLM-related errors
+  | 'policy' // Policy engine errors
+  | 'execution' // MCP tool execution
+  | 'storage' // Database/filesystem
+  | 'network' // Network connectivity
+  | 'auth' // Authentication
+  | 'system'; // System-level errors
 
 interface AppError {
   code: string;
   category: ErrorCategory;
   message: string;
-  user_message: string;      // User-friendly message
+  user_message: string; // User-friendly message
   recoverable: boolean;
   suggested_action?: string;
   metadata?: Record<string, unknown>;
@@ -2111,7 +2099,7 @@ const INPUT_ERRORS = {
     message: 'FluidAudio STT service unavailable',
     user_message: 'Voice input is temporarily unavailable. Please use text input.',
     recoverable: true,
-    suggested_action: 'Check microphone permissions in System Preferences'
+    suggested_action: 'Check microphone permissions in System Preferences',
   },
   MICROPHONE_DENIED: {
     code: 'INPUT_002',
@@ -2119,15 +2107,15 @@ const INPUT_ERRORS = {
     message: 'Microphone permission denied',
     user_message: 'Microphone access is required for voice input.',
     recoverable: true,
-    suggested_action: 'Grant microphone permission in System Preferences > Privacy'
+    suggested_action: 'Grant microphone permission in System Preferences > Privacy',
   },
   TRANSCRIPTION_FAILED: {
     code: 'INPUT_003',
     category: 'input',
     message: 'Transcription failed',
     user_message: 'Could not transcribe audio. Please try again or use text input.',
-    recoverable: true
-  }
+    recoverable: true,
+  },
 };
 ```
 
@@ -2141,7 +2129,7 @@ const LLM_ERRORS = {
     message: 'Cannot connect to Ollama',
     user_message: 'Local AI is not available. Please ensure Ollama is running.',
     recoverable: false,
-    suggested_action: 'Install Ollama from https://ollama.ai and start it'
+    suggested_action: 'Install Ollama from https://ollama.ai and start it',
   },
   MODEL_NOT_FOUND: {
     code: 'LLM_002',
@@ -2149,21 +2137,21 @@ const LLM_ERRORS = {
     message: 'Requested model not found',
     user_message: 'The selected AI model is not installed.',
     recoverable: true,
-    suggested_action: 'Run "ollama pull <model_name>" to install the model'
+    suggested_action: 'Run "ollama pull <model_name>" to install the model',
   },
   GENERATION_TIMEOUT: {
     code: 'LLM_003',
     category: 'llm',
     message: 'LLM generation timed out',
     user_message: 'AI response took too long. Please try again with a simpler request.',
-    recoverable: true
+    recoverable: true,
   },
   INVALID_PROPOSAL: {
     code: 'LLM_004',
     category: 'llm',
     message: 'LLM generated invalid proposal structure',
     user_message: 'AI could not process your request. Please rephrase.',
-    recoverable: true
+    recoverable: true,
   },
   CLOUD_API_ERROR: {
     code: 'LLM_005',
@@ -2171,11 +2159,10 @@ const LLM_ERRORS = {
     message: 'Cloud AI API error',
     user_message: 'Cloud AI service returned an error. Check your API key.',
     recoverable: true,
-    suggested_action: 'Verify API key in Settings'
-  }
+    suggested_action: 'Verify API key in Settings',
+  },
 };
 ```
-
 
 **Policy Engine Errors**:
 
@@ -2186,7 +2173,7 @@ const POLICY_ERRORS = {
     category: 'policy',
     message: 'Policy engine crashed during evaluation',
     user_message: 'Security check failed. Action blocked for safety.',
-    recoverable: false
+    recoverable: false,
     // CRITICAL: Fail-safe - deny on policy engine failure
   },
   NO_MATCHING_SKILL: {
@@ -2194,15 +2181,15 @@ const POLICY_ERRORS = {
     category: 'policy',
     message: 'No skill defines the requested operation',
     user_message: 'This action is not currently permitted. No skill authorizes it.',
-    recoverable: false
+    recoverable: false,
   },
   CONSTRAINT_VIOLATION: {
     code: 'POLICY_003',
     category: 'policy',
     message: 'Policy constraint violated',
     user_message: 'Action blocked by policy rules.',
-    recoverable: false
-  }
+    recoverable: false,
+  },
 };
 ```
 
@@ -2215,14 +2202,14 @@ const EXECUTION_ERRORS = {
     category: 'execution',
     message: 'Attempted to invoke unregistered MCP tool',
     user_message: 'This action requires a tool that is not configured.',
-    recoverable: false
+    recoverable: false,
   },
   TOOL_INVOCATION_FAILED: {
     code: 'EXEC_002',
     category: 'execution',
     message: 'MCP tool returned error',
     user_message: 'Action failed. See details for more information.',
-    recoverable: true
+    recoverable: true,
   },
   PARTIAL_EXECUTION: {
     code: 'EXEC_003',
@@ -2230,7 +2217,7 @@ const EXECUTION_ERRORS = {
     message: 'Action partially completed before failure',
     user_message: 'Action partially completed. Attempting rollback.',
     recoverable: true,
-    suggested_action: 'Review Activity log for details'
+    suggested_action: 'Review Activity log for details',
   },
   ROLLBACK_FAILED: {
     code: 'EXEC_004',
@@ -2238,8 +2225,8 @@ const EXECUTION_ERRORS = {
     message: 'Rollback operation failed',
     user_message: 'Could not undo the action. Manual intervention may be required.',
     recoverable: false,
-    suggested_action: 'Contact support with the action ID from Activity log'
-  }
+    suggested_action: 'Contact support with the action ID from Activity log',
+  },
 };
 ```
 
@@ -2252,14 +2239,14 @@ const STORAGE_ERRORS = {
     category: 'storage',
     message: 'SQLite database corrupted',
     user_message: 'Application data is corrupted. Backup may be required.',
-    recoverable: false
+    recoverable: false,
   },
   DISK_FULL: {
     code: 'STORAGE_002',
     category: 'storage',
     message: 'Insufficient disk space',
     user_message: 'Not enough disk space. Free up space and try again.',
-    recoverable: true
+    recoverable: true,
   },
   SKILL_FILE_INVALID: {
     code: 'STORAGE_003',
@@ -2267,7 +2254,7 @@ const STORAGE_ERRORS = {
     message: 'Skill YAML file is invalid',
     user_message: 'A skill configuration file has errors.',
     recoverable: true,
-    suggested_action: 'Check skill files in ~/Library/Application Support/AIWorkAssistant/skills/'
-  }
+    suggested_action: 'Check skill files in ~/Library/Application Support/AIWorkAssistant/skills/',
+  },
 };
 ```

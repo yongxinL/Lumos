@@ -10,13 +10,13 @@
 
 ## Meta
 
-| Field | Value |
-|-------|-------|
-| Domain | Desktop / AI/ML |
-| Pattern | Event-Driven Layered Architecture with Governance Pipeline |
-| Scale | Medium |
-| Team Size | 1-2 developers |
-| Skill Tier | Advanced |
+| Field      | Value                                                      |
+| ---------- | ---------------------------------------------------------- |
+| Domain     | Desktop / AI/ML                                            |
+| Pattern    | Event-Driven Layered Architecture with Governance Pipeline |
+| Scale      | Medium                                                     |
+| Team Size  | 1-2 developers                                             |
+| Skill Tier | Advanced                                                   |
 
 ---
 
@@ -25,6 +25,7 @@
 ### 1.1 System Purpose
 
 Lumos is a **governed AI operating layer** for desktop productivity that:
+
 - Processes user requests via text and voice input
 - Generates structured action proposals using local AI
 - Enforces governance through deterministic policy evaluation
@@ -33,14 +34,14 @@ Lumos is a **governed AI operating layer** for desktop productivity that:
 
 ### 1.2 Core Design Principles
 
-| Principle | Implementation |
-|-----------|----------------|
-| **AI proposes, humans approve** | Dual-LLM architecture with policy gate |
-| **Observable** | Append-only audit logs, visible permissions |
-| **Reversible** | Rollback plans for all reversible operations |
-| **Controllable** | Per-operation trust levels, instant revocation |
-| **Local-first** | Evaluation LLM runs locally, no cloud fallback |
-| **Fail-safe** | Policy engine crash = deny action |
+| Principle                       | Implementation                                 |
+| ------------------------------- | ---------------------------------------------- |
+| **AI proposes, humans approve** | Dual-LLM architecture with policy gate         |
+| **Observable**                  | Append-only audit logs, visible permissions    |
+| **Reversible**                  | Rollback plans for all reversible operations   |
+| **Controllable**                | Per-operation trust levels, instant revocation |
+| **Local-first**                 | Evaluation LLM runs locally, no cloud fallback |
+| **Fail-safe**                   | Policy engine crash = deny action              |
 
 ### 1.3 Architecture Pattern
 
@@ -99,18 +100,21 @@ Lumos is a **governed AI operating layer** for desktop productivity that:
 **Domain-Specific Patterns Applied:**
 
 ### For Desktop:
+
 - [x] Native OS integration (macOS first)
 - [x] Local-first architecture with SQLite
 - [x] System-level permissions (Keychain, microphone)
 - [x] Application bundle distribution
 
 ### For AI/ML:
+
 - [x] Dual-LLM architecture (local + cloud)
 - [x] Model serving infrastructure (Ollama integration)
 - [x] Training vs inference separation (local eval, cloud expert)
 - [x] Constrained output generation (JSON schema validation)
 
 **Domain-Specific Considerations:**
+
 - Desktop app requires code signing and notarization for macOS
 - AI governance requires deterministic policy engine (no LLM in critical path)
 - Local LLM performance depends on hardware (recommend 16GB+ RAM)
@@ -184,6 +188,7 @@ C4Component
 **Responsibility:** Process text and audio input from user.
 
 **Interfaces:**
+
 ```typescript
 interface InputHandlerService {
   submitText(text: string): Promise<ProcessedInput>;
@@ -197,10 +202,12 @@ interface InputHandlerService {
 ```
 
 **Dependencies:**
+
 - FluidAudio (native Swift bridge)
 - Event emitter for UI updates
 
 **Design Decisions:**
+
 - Audio processing via native Swift bridge for macOS integration
 - Transcription preview allows user to confirm/edit before submission
 - Streaming partial transcripts for real-time feedback
@@ -210,6 +217,7 @@ interface InputHandlerService {
 **Responsibility:** Classify input and route to appropriate processor.
 
 **Interfaces:**
+
 ```typescript
 interface FastPathService {
   classify(input: ProcessedInput): FastPathResult;
@@ -224,11 +232,13 @@ interface FastPathResult {
 ```
 
 **Dependencies:**
+
 - Pattern matching engine (regex-based)
 
 **Performance Target:** <10ms classification
 
 **Design Decisions:**
+
 - Pure TypeScript pattern matching (no LLM)
 - Action patterns take priority over non-action patterns
 - Ambiguous input defaults to Evaluation LLM (fail-safe)
@@ -238,6 +248,7 @@ interface FastPathResult {
 **Responsibility:** Extract intent and generate structured action proposals.
 
 **Interfaces:**
+
 ```typescript
 interface EvaluationLLMService {
   initialize(config: EvaluationLLMConfig): Promise<void>;
@@ -248,12 +259,14 @@ interface EvaluationLLMService {
 ```
 
 **Dependencies:**
+
 - Ollama HTTP client
 - JSON Schema validator
 
 **Performance Target:** 2-3 seconds generation
 
 **Design Decisions:**
+
 - **Local-only execution** - No cloud fallback (governance requirement)
 - **Constrained JSON decoding** - Uses Ollama's `format` parameter
 - **Schema validation** - Double-check output against ActionProposal schema
@@ -264,6 +277,7 @@ interface EvaluationLLMService {
 **Responsibility:** Deterministically evaluate proposals against skills and policies.
 
 **Interfaces:**
+
 ```typescript
 interface PolicyEngine {
   evaluate(proposal: ActionProposal, context: EvaluationContext): PolicyResult;
@@ -273,6 +287,7 @@ interface PolicyEngine {
 ```
 
 **Dependencies:**
+
 - Skill registry
 - Trust management service
 - JSON Schema validator
@@ -280,6 +295,7 @@ interface PolicyEngine {
 **Performance Target:** <50ms evaluation
 
 **Design Decisions:**
+
 - **Pure TypeScript** - No LLM involvement (fail-safe guarantee)
 - **Priority-based skill matching** - Higher priority skills evaluated first
 - **Fail-safe on crash** - Engine failure = deny action
@@ -290,6 +306,7 @@ interface PolicyEngine {
 **Responsibility:** Complex reasoning, action planning, and response generation.
 
 **Interfaces:**
+
 ```typescript
 interface ExpertAIService {
   initialize(config: ExpertAIConfig): Promise<void>;
@@ -302,10 +319,12 @@ interface ExpertAIService {
 ```
 
 **Dependencies:**
+
 - Multiple AI provider clients (Ollama, Claude, OpenAI)
 - Model configuration registry
 
 **Design Decisions:**
+
 - **User-selectable model** - Local or cloud based on preference
 - **Cannot bypass policy engine** - All proposals go through governance
 - **Model-agnostic interface** - Unified API across providers
@@ -316,6 +335,7 @@ interface ExpertAIService {
 **Responsibility:** Execute approved actions via MCP tools.
 
 **Interfaces:**
+
 ```typescript
 interface ExecutionLayer {
   execute(plan: ActionPlan, proposal: ActionProposal): Promise<ExecutionResult>;
@@ -325,11 +345,13 @@ interface ExecutionLayer {
 ```
 
 **Dependencies:**
+
 - MCP client library
 - MCP server registry
 - Audit service
 
 **Design Decisions:**
+
 - **Fail-safe tool registration** - Unregistered tools cannot be invoked
 - **State capture before execution** - Enables rollback
 - **Automatic rollback on failure** - Multi-step operations rolled back on error
@@ -340,6 +362,7 @@ interface ExecutionLayer {
 **Responsibility:** Maintain append-only log of all significant events.
 
 **Interfaces:**
+
 ```typescript
 interface AuditService {
   log(record: Omit<AuditRecord, 'id' | 'timestamp'>): Promise<AuditRecord>;
@@ -350,10 +373,12 @@ interface AuditService {
 ```
 
 **Dependencies:**
+
 - SQLite database
 - Export formatters
 
 **Design Decisions:**
+
 - **Append-only storage** - No UPDATE/DELETE on audit_log table
 - **Immutable records** - Rollbacks create new records with reference
 - **Hash-based integrity** - Input hashes for privacy, content hashes for integrity
@@ -364,6 +389,7 @@ interface AuditService {
 **Responsibility:** Manage trust levels per operation type.
 
 **Interfaces:**
+
 ```typescript
 interface TrustManagementService {
   getTrustLevel(operation: OperationType): TrustLevel;
@@ -378,10 +404,12 @@ interface TrustManagementService {
 ```
 
 **Dependencies:**
+
 - SQLite database
 - Notification service (for attestation reminders)
 
 **Design Decisions:**
+
 - **Per-operation trust** - Trust earned for specific operations, not globally
 - **Progressive delegation** - OBSERVE → SUPERVISED → DELEGATED
 - **Automatic demotion on rollback** - Trust lost on failure
@@ -402,22 +430,26 @@ We need AI capabilities for both intent extraction (proposals) and complex reaso
 
 **Decision:**
 Implement a dual-LLM architecture:
+
 1. **Evaluation LLM** (local-only, Ollama) - Fast intent extraction with constrained JSON output
 2. **Expert AI** (user-selectable) - Complex reasoning, model-agnostic
 
 **Rationale:**
+
 - Evaluation LLM must be local for governance (no external data leakage)
 - Expert AI can be user-selected based on task complexity
 - Separation allows different optimization strategies
 - Constrained JSON decoding ensures consistent proposal format
 
 **Competitive Context:**
+
 - **GitHub Copilot Approach:** Cloud-only models, no local option
 - **Continue.dev Approach:** Supports local models but no governance layer
 - **Our Differentiator:** Local-first with governance, privacy-focused
 - **Strategic Advantage:** GDPR/compliance friendly, works offline
 
 **Consequences:**
+
 - **Positive:**
   - Privacy-first approach appeals to enterprise users
   - Offline capability differentiates from cloud-only solutions
@@ -441,12 +473,14 @@ The policy engine is the security-critical component that determines which actio
 Implement the policy engine as pure TypeScript with deterministic evaluation. No LLM involvement in policy decisions.
 
 **Rationale:**
+
 - LLM outputs are non-deterministic and could be manipulated
 - Governance requires predictable, auditable decisions
 - Performance requirement (<50ms) incompatible with LLM latency
 - Fail-safe: if engine crashes, default to DENY
 
 **Consequences:**
+
 - Skills must define constraints as TypeScript expressions
 - Policy rules are less flexible than natural language
 - Easier to audit and test
@@ -466,17 +500,20 @@ FluidAudio requires native macOS Swift integration. We need to bridge this with 
 Use IPC (Inter-Process Communication) with a separate Swift helper process rather than native Node modules.
 
 **Alternatives Considered:**
+
 1. **Native Node module (N-API)** - Complex build, memory management issues
 2. **IPC bridge** - Simpler, process isolation ✓
 3. **Electron native module** - Limited Swift support
 
 **Rationale:**
+
 - Process isolation provides stability (crash doesn't take down app)
 - Simpler development and debugging
 - Standard IPC patterns (JSON over stdio/socket)
 - Easier to test Swift component independently
 
 **Consequences:**
+
 - Additional latency (~10-20ms for IPC)
 - Need to manage Swift process lifecycle
 - Audio data serialization overhead
@@ -496,21 +533,24 @@ The Evaluation LLM must output valid ActionProposal JSON. Free-form LLM output i
 Use Ollama's `format` parameter with JSON Schema for constrained decoding, with JSON Schema validation as fallback.
 
 **Implementation:**
+
 ```typescript
 const request = {
   model: 'qwen3-vl-4b',
   format: PROPOSAL_JSON_SCHEMA,
-  options: { temperature: 0.1 }
+  options: { temperature: 0.1 },
 };
 ```
 
 **Rationale:**
+
 - Grammar-based generation guarantees valid JSON structure
 - Low temperature reduces variability
 - Schema validation catches edge cases
 - Recovery strategy: retry with simplified prompt
 
 **Consequences:**
+
 - Requires Ollama with JSON mode support
 - Limited to schema-describable outputs
 - Must handle parsing failures gracefully
@@ -529,6 +569,7 @@ Audit logs are critical for governance and must be tamper-evident.
 Implement audit logs as append-only SQLite table with no UPDATE/DELETE operations. Rollbacks create new records referencing the original.
 
 **Implementation:**
+
 ```sql
 -- No UPDATE or DELETE permissions on this table
 CREATE TABLE audit_log (
@@ -540,12 +581,14 @@ CREATE TABLE audit_log (
 ```
 
 **Rationale:**
+
 - Append-only provides tamper evidence
 - Record linking enables audit trails
 - SQLite triggers can enforce at database level
 - Export capability for compliance
 
 **Consequences:**
+
 - Database grows over time (need archival strategy)
 - Cannot "fix" incorrect entries (must create corrections)
 - Clear audit trail for all actions
@@ -564,12 +607,14 @@ The system needs to interact with external services (calendar, filesystem) throu
 Use Model Context Protocol (MCP) for all tool integrations. Public MCP servers for Phase 1, custom ServiceNow MCP for Phase 2.
 
 **Rationale:**
+
 - Standardized protocol for AI-tool interaction
 - Growing ecosystem of public MCP servers
 - Consistent capability model and security
 - Enables third-party tool integration
 
 **Consequences:**
+
 - Dependent on MCP server availability
 - Must implement MCP client
 - ServiceNow integration requires custom MCP server development
@@ -586,21 +631,25 @@ Users need to control how much autonomy the AI has for different operations.
 
 **Decision:**
 Implement three trust levels per operation type:
+
 - **OBSERVE**: AI suggests, no actions taken
 - **SUPERVISED**: AI proposes, user approves each action
 - **DELEGATED**: AI executes automatically (with attestation)
 
 **Promotion Rules:**
+
 - OBSERVE → SUPERVISED: Immediate (user request)
 - SUPERVISED → DELEGATED: 10+ successes, no rollbacks
 
 **Rationale:**
+
 - Trust earned incrementally, not given globally
 - High-risk operations can stay supervised
 - Periodic attestation prevents "set and forget" risks
 - Automatic demotion on rollback protects user
 
 **Consequences:**
+
 - More complex UX for permission management
 - Per-operation tracking overhead
 - 30-day attestation requires UI prompts
@@ -644,35 +693,38 @@ Implement three trust levels per operation type:
 
 **See:** [Threat Model](threat-model.md) for complete STRIDE analysis.
 
-| Threat | Mitigation |
-|--------|------------|
-| Malicious prompt injection | Constrained JSON decoding, schema validation |
-| Data exfiltration via LLM | Evaluation LLM is local-only, no network access |
-| Unauthorized action execution | Policy engine gate, user confirmation |
-| Audit log tampering | Append-only design, no UPDATE/DELETE |
-| Credential theft | macOS Keychain (hardware-backed on Apple Silicon) |
-| Session hijacking | Secure session tokens, expiry enforcement |
-| Skill definition tampering | Version hashing, signature verification (Phase 2) |
+| Threat                        | Mitigation                                        |
+| ----------------------------- | ------------------------------------------------- |
+| Malicious prompt injection    | Constrained JSON decoding, schema validation      |
+| Data exfiltration via LLM     | Evaluation LLM is local-only, no network access   |
+| Unauthorized action execution | Policy engine gate, user confirmation             |
+| Audit log tampering           | Append-only design, no UPDATE/DELETE              |
+| Credential theft              | macOS Keychain (hardware-backed on Apple Silicon) |
+| Session hijacking             | Secure session tokens, expiry enforcement         |
+| Skill definition tampering    | Version hashing, signature verification (Phase 2) |
 
 ### 7.3 Encryption Strategy
 
 **At Rest:**
+
 - SQLite database: Unencrypted (relies on macOS FileVault)
 - Sensitive fields (transcripts, PII): AES-256-GCM encryption
 - Encryption key: Stored in macOS Keychain
 
 **In Transit:**
+
 - Local services: Unix sockets (IPC)
 - Cloud AI: HTTPS with certificate pinning
 - MCP servers: HTTPS/TLS
 
 **Key Management:**
+
 ```typescript
 // First-run key generation
 async function initializeEncryption(): Promise<void> {
   let key = await keychain.getEncryptionKey();
   if (!key) {
-    key = crypto.randomBytes(32);  // 256-bit key
+    key = crypto.randomBytes(32); // 256-bit key
     await keychain.setEncryptionKey(key);
   }
 }
@@ -738,16 +790,16 @@ flowchart TD
 
 ### 8.2 Data Storage Strategy
 
-| Data Type | Storage | Encryption | Retention |
-|-----------|---------|------------|-----------|
-| Skills | Filesystem (YAML) + SQLite | No | Permanent |
-| Policies | Filesystem (YAML) + SQLite | No | Permanent |
-| Audit logs | SQLite | No (hash PII) | Configurable (default: 1 year) |
-| Trust levels | SQLite | No | Permanent |
-| User preferences | SQLite | No | Permanent |
-| Meeting transcripts | SQLite | AES-256-GCM | User-controlled |
-| API keys | macOS Keychain | OS-managed | User-controlled |
-| Session tokens | SQLite | No (short-lived) | Session duration |
+| Data Type           | Storage                    | Encryption       | Retention                      |
+| ------------------- | -------------------------- | ---------------- | ------------------------------ |
+| Skills              | Filesystem (YAML) + SQLite | No               | Permanent                      |
+| Policies            | Filesystem (YAML) + SQLite | No               | Permanent                      |
+| Audit logs          | SQLite                     | No (hash PII)    | Configurable (default: 1 year) |
+| Trust levels        | SQLite                     | No               | Permanent                      |
+| User preferences    | SQLite                     | No               | Permanent                      |
+| Meeting transcripts | SQLite                     | AES-256-GCM      | User-controlled                |
+| API keys            | macOS Keychain             | OS-managed       | User-controlled                |
+| Session tokens      | SQLite                     | No (short-lived) | Session duration               |
 
 ### 8.3 Schema Versioning
 
@@ -762,6 +814,7 @@ CREATE TABLE schema_version (
 ```
 
 Migration strategy:
+
 1. Check current version on startup
 2. Apply pending migrations in order
 3. Backup before destructive migrations
@@ -774,6 +827,7 @@ Migration strategy:
 ### 9.1 FluidAudio Integration (macOS STT)
 
 **Architecture:**
+
 ```
 ┌──────────────┐     IPC      ┌──────────────┐
 │   Electron   │◄────────────►│    Swift     │
@@ -788,6 +842,7 @@ Migration strategy:
 ```
 
 **IPC Protocol:**
+
 ```typescript
 // Electron → Swift
 { type: 'start_recording', options: { sampleRate: 16000 } }
@@ -804,6 +859,7 @@ Migration strategy:
 **Endpoint:** `http://localhost:11434/api/generate`
 
 **Configuration:**
+
 ```yaml
 evaluation_llm:
   provider: ollama
@@ -813,11 +869,12 @@ evaluation_llm:
 ```
 
 **Request Format:**
+
 ```typescript
 interface OllamaRequest {
   model: string;
   prompt: string;
-  format: JSONSchema;  // Constrained decoding
+  format: JSONSchema; // Constrained decoding
   stream: false;
   options: {
     temperature: 0.1;
@@ -830,16 +887,17 @@ interface OllamaRequest {
 
 **Phase 1 Servers:**
 
-| Server | Package | Capabilities |
-|--------|---------|--------------|
-| Calendar | @anthropic/mcp-server-calendar | read, create, update, delete events |
-| Filesystem | @anthropic/mcp-server-filesystem | read, write, list files |
+| Server     | Package                          | Capabilities                        |
+| ---------- | -------------------------------- | ----------------------------------- |
+| Calendar   | @anthropic/mcp-server-calendar   | read, create, update, delete events |
+| Filesystem | @anthropic/mcp-server-filesystem | read, write, list files             |
 
 **Registration:**
+
 ```yaml
 servers:
   - name: calendar
-    package: "@anthropic/mcp-server-calendar"
+    package: '@anthropic/mcp-server-calendar'
     capabilities: [read_events, create_event, update_event, delete_event]
     skill_required: calendar-operations
 ```
@@ -847,11 +905,13 @@ servers:
 ### 9.4 Cloud AI Providers (Optional)
 
 **Supported Providers:**
+
 - Claude (Anthropic API)
 - GPT-4 (OpenAI API)
 - ServiceNow LLM (Phase 2)
 
 **Provider Interface:**
+
 ```typescript
 interface AIProvider {
   id: string;
@@ -866,28 +926,31 @@ interface AIProvider {
 
 ### 10.1 Performance Targets
 
-| Operation | Target | Strategy |
-|-----------|--------|----------|
-| Fast path classification | <10ms | Regex compilation, no I/O |
-| Proposal generation | 2-3s | Local LLM, low temperature |
-| Policy evaluation | <50ms | Constraint caching, priority skip |
-| Transcription | <5s | Native Swift, streaming |
-| SQLite queries | <100ms | Indexes, prepared statements |
+| Operation                | Target | Strategy                          |
+| ------------------------ | ------ | --------------------------------- |
+| Fast path classification | <10ms  | Regex compilation, no I/O         |
+| Proposal generation      | 2-3s   | Local LLM, low temperature        |
+| Policy evaluation        | <50ms  | Constraint caching, priority skip |
+| Transcription            | <5s    | Native Swift, streaming           |
+| SQLite queries           | <100ms | Indexes, prepared statements      |
 
 ### 10.2 Optimization Strategies
 
 **Policy Engine:**
+
 - Pre-compile TypeScript constraint expressions
 - Cache skill matches by operation type
 - Early exit on first matching skill
 - Memoize repeated evaluations
 
 **Audit Service:**
+
 - Batch writes with WAL mode
 - Index on frequently-queried columns
 - Archive old records to separate file
 
 **UI Responsiveness:**
+
 - Streaming transcription updates
 - Optimistic UI for proposal display
 - Background skill sync
@@ -896,11 +959,11 @@ interface AIProvider {
 
 ```typescript
 const RESOURCE_LIMITS = {
-  max_transcript_length: 10000,      // characters
-  max_proposal_size: 50000,          // bytes
+  max_transcript_length: 10000, // characters
+  max_proposal_size: 50000, // bytes
   max_concurrent_mcp_calls: 3,
   max_audit_records_query: 1000,
-  session_timeout_ms: 28800000,      // 8 hours
+  session_timeout_ms: 28800000, // 8 hours
 };
 ```
 
@@ -1052,14 +1115,14 @@ graph TD
 
 ### 12.1 Core Technologies
 
-| Layer | Technology | Version | Rationale |
-|-------|------------|---------|-----------|
-| Desktop Framework | Electron | 28.x | Cross-platform desktop (macOS first) |
-| UI Framework | React | 18.x | Component model, hooks, ecosystem |
-| Language | TypeScript | 5.x | Type safety, IDE support |
-| Database | SQLite | 3.x | Embedded, reliable, fast |
-| Local LLM | Ollama | Latest | Local inference, JSON mode |
-| STT | FluidAudio | Latest | macOS native, high quality |
+| Layer             | Technology | Version | Rationale                            |
+| ----------------- | ---------- | ------- | ------------------------------------ |
+| Desktop Framework | Electron   | 28.x    | Cross-platform desktop (macOS first) |
+| UI Framework      | React      | 18.x    | Component model, hooks, ecosystem    |
+| Language          | TypeScript | 5.x     | Type safety, IDE support             |
+| Database          | SQLite     | 3.x     | Embedded, reliable, fast             |
+| Local LLM         | Ollama     | Latest  | Local inference, JSON mode           |
+| STT               | FluidAudio | Latest  | macOS native, high quality           |
 
 ### 12.2 Key Dependencies
 
@@ -1086,16 +1149,16 @@ graph TD
 
 ### 12.3 Build vs Integrate Decisions
 
-| Requirement | Decision | Rationale |
-|-------------|----------|-----------|
-| Local LLM inference | **Integrate: Ollama** | Mature, active development, JSON mode |
-| Speech-to-text | **Integrate: FluidAudio** | macOS native, high quality |
-| Calendar operations | **Integrate: MCP Calendar** | Standard protocol, maintained |
-| File operations | **Integrate: MCP Filesystem** | Standard protocol, maintained |
-| Policy engine | **Build: Custom** | Core differentiator, security-critical |
-| Trust management | **Build: Custom** | Core differentiator, unique requirements |
-| Audit system | **Build: Custom** | Custom schema, append-only requirement |
-| UI components | **Build: Custom + shadcn/ui** | Specific UX needs, accessibility |
+| Requirement         | Decision                      | Rationale                                |
+| ------------------- | ----------------------------- | ---------------------------------------- |
+| Local LLM inference | **Integrate: Ollama**         | Mature, active development, JSON mode    |
+| Speech-to-text      | **Integrate: FluidAudio**     | macOS native, high quality               |
+| Calendar operations | **Integrate: MCP Calendar**   | Standard protocol, maintained            |
+| File operations     | **Integrate: MCP Filesystem** | Standard protocol, maintained            |
+| Policy engine       | **Build: Custom**             | Core differentiator, security-critical   |
+| Trust management    | **Build: Custom**             | Core differentiator, unique requirements |
+| Audit system        | **Build: Custom**             | Custom schema, append-only requirement   |
+| UI components       | **Build: Custom + shadcn/ui** | Specific UX needs, accessibility         |
 
 ---
 
@@ -1145,16 +1208,16 @@ Lumos.app/
 
 ## Appendix A: Glossary
 
-| Term | Definition |
-|------|------------|
-| **ActionProposal** | Structured AI output describing an intended action |
-| **Evaluation LLM** | Local-only AI for intent extraction and proposal generation |
-| **Expert AI** | User-selectable AI for complex reasoning |
-| **Fast Path** | Routing layer that bypasses LLM for non-action queries |
-| **MCP** | Model Context Protocol - standard for AI-tool interaction |
-| **Policy Engine** | Deterministic constraint evaluator |
-| **Skill** | YAML-defined capability with constraints |
-| **Trust Level** | Per-operation permission level (OBSERVE/SUPERVISED/DELEGATED) |
+| Term               | Definition                                                    |
+| ------------------ | ------------------------------------------------------------- |
+| **ActionProposal** | Structured AI output describing an intended action            |
+| **Evaluation LLM** | Local-only AI for intent extraction and proposal generation   |
+| **Expert AI**      | User-selectable AI for complex reasoning                      |
+| **Fast Path**      | Routing layer that bypasses LLM for non-action queries        |
+| **MCP**            | Model Context Protocol - standard for AI-tool interaction     |
+| **Policy Engine**  | Deterministic constraint evaluator                            |
+| **Skill**          | YAML-defined capability with constraints                      |
+| **Trust Level**    | Per-operation permission level (OBSERVE/SUPERVISED/DELEGATED) |
 
 ---
 
