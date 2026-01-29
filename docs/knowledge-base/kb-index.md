@@ -16,8 +16,8 @@
 | Successes | 2      | 2026-01-29   |
 | Patterns  | 1      | 2026-01-29   |
 | Decisions | 3      | 2026-01-29   |
-| Instincts | 13     | 2026-01-29   |
-| **Total** | **21** | 2026-01-29   |
+| Instincts | 14     | 2026-01-29   |
+| **Total** | **22** | 2026-01-29   |
 
 ---
 
@@ -257,8 +257,9 @@
 | ----------------------------------------------------------------------------------------------------------------- | ---------- | ------------------ | ------------------------------------------------ |
 | [initialize-event-emitter-after-window-ready](instincts/technical/initialize-event-emitter-after-window-ready.md) | 0.90       | Electron & IPC     | When implementing IPC event emitters in Electron |
 | [separate-global-type-declarations](instincts/technical/separate-global-type-declarations.md)                     | 0.85       | TypeScript & Types | When extending global interfaces (Window)        |
+| [restage-after-lint-fixes](instincts/technical/restage-after-lint-fixes.md)                                       | 0.95       | Git & Workflow     | After fixing lint errors from pre-commit hooks   |
 
-**Summary:** Learned from T-1.2.3 IPC bridge implementation. First instinct prevents race conditions by initializing event emitter after window is fully ready. Second instinct prevents "duplicate identifier" errors by using dedicated .d.ts files for global declarations rather than mixing with type exports.
+**Summary:** Learned from T-1.2.3 IPC bridge implementation. First instinct prevents race conditions by initializing event emitter after window is fully ready. Second instinct prevents "duplicate identifier" errors by using dedicated .d.ts files for global declarations. Third instinct prevents repeated commit failures by re-staging files after fixing lint errors (lint-staged checks staged version, not working directory).
 
 ---
 

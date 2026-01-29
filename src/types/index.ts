@@ -139,6 +139,11 @@ export type {
   ExtractedEntity,
   FastPathResult,
   InputValidation,
+  InputType,
+  Route,
+  RecordingState,
+  FastPathRoutingInput,
+  FastPathClassification,
 } from './input/input';
 
 // ============================================================================

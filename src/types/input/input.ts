@@ -142,3 +142,57 @@ export interface InputValidation {
   /** Sanitized input (if validation passed) */
   sanitized_input?: string;
 }
+
+/**
+ * Input type classification
+ */
+export type InputType = 'text' | 'voice' | 'ui_action';
+
+/**
+ * Routing destination for processed input
+ */
+export type Route = 'evaluation_llm' | 'expert_ai' | 'fast_path_response';
+
+/**
+ * Recording state for audio input
+ */
+export interface RecordingState {
+  /** Whether actively recording */
+  is_recording: boolean;
+  /** Duration of recording in milliseconds */
+  duration_ms: number;
+  /** Timestamp of state change */
+  timestamp: ISO8601String;
+}
+
+/**
+ * Simplified processed input for fast path routing
+ */
+export interface FastPathRoutingInput {
+  /** Input text to classify */
+  text: string;
+  /** Input type (text or voice) */
+  type: InputType;
+  /** When input was received */
+  timestamp: ISO8601String;
+  /** Source of input */
+  source: string;
+  /** Additional metadata */
+  metadata?: Record<string, unknown>;
+}
+
+/**
+ * Fast path classification result
+ */
+export interface FastPathClassification {
+  /** Classification: action vs non-action */
+  classification: 'action' | 'non_action';
+  /** Confidence score (0-1) */
+  confidence: number;
+  /** Matched pattern if any */
+  matched_pattern: string | null;
+  /** Routing destination */
+  route_to: Route;
+  /** Time taken to classify in milliseconds */
+  classification_time_ms: number;
+}
