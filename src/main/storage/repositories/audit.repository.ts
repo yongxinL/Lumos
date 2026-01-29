@@ -1,0 +1,141 @@
+/**
+ * Audit log repository
+ *
+ * Type-safe read-only access to audit logs (append-only table).
+ */
+
+import type { Database, Statement } from 'better-sqlite3';
+import { uuid, iso8601 } from '../../../types';
+import type { AuditLog, AuditEventType, ActorType, ActionOutcome, UUID } from '../../../types';
+import { QueryError } from '../errors';
+
+export class AuditRepository {
+  // Database instance not stored directly, use passed reference
+
+  // Cached prepared statements
+  private selectByIdStmt: Statement;
+  private selectRecentStmt: Statement;
+  private selectByActionIdStmt: Statement;
+  private insertStmt: Statement;
+
+  constructor(db: Database) {
+    this.selectByIdStmt = db.prepare('SELECT * FROM audit_log WHERE id = ?');
+    this.selectRecentStmt = db.prepare(`
+      SELECT * FROM audit_log
+      ORDER BY timestamp DESC
+      LIMIT ?
+    `);
+    this.selectByActionIdStmt = db.prepare(`
+      SELECT * FROM audit_log
+      WHERE action_id = ?
+      ORDER BY timestamp ASC
+    `);
+    this.insertStmt = db.prepare(`
+      INSERT INTO audit_log (
+        id, timestamp, event_type, actor_type, actor_id,
+        action_id, operation, outcome, input_hash, output_hash,
+        duration_ms, error_message, rollback_of, metadata
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `);
+  }
+
+  /**
+   * Find audit log entry by ID
+   */
+  findById(id: UUID): AuditLog | null {
+    try {
+      const row = this.selectByIdStmt.get(id) as Record<string, unknown> | undefined;
+      return row ? this.deserialize(row) : null;
+    } catch (error) {
+      throw new QueryError(
+        `Failed to find audit log by id: ${id}`,
+        this.selectByIdStmt.source,
+        error instanceof Error ? error : undefined
+      );
+    }
+  }
+
+  /**
+   * Get recent audit log entries
+   */
+  findRecent(limit: number = 100): AuditLog[] {
+    try {
+      const rows = this.selectRecentStmt.all(limit) as Record<string, unknown>[];
+      return rows.map((row) => this.deserialize(row));
+    } catch (error) {
+      throw new QueryError(
+        'Failed to find recent audit logs',
+        this.selectRecentStmt.source,
+        error instanceof Error ? error : undefined
+      );
+    }
+  }
+
+  /**
+   * Get audit trail for a specific action
+   */
+  findByActionId(actionId: UUID): AuditLog[] {
+    try {
+      const rows = this.selectByActionIdStmt.all(actionId) as Record<string, unknown>[];
+      return rows.map((row) => this.deserialize(row));
+    } catch (error) {
+      throw new QueryError(
+        `Failed to find audit logs for action: ${actionId}`,
+        this.selectByActionIdStmt.source,
+        error instanceof Error ? error : undefined
+      );
+    }
+  }
+
+  /**
+   * Append new audit log entry (only operation allowed on audit_log)
+   */
+  append(log: AuditLog): void {
+    try {
+      this.insertStmt.run(
+        log.id,
+        log.timestamp,
+        log.event_type,
+        log.actor_type,
+        log.actor_id,
+        log.action_id,
+        log.operation,
+        log.outcome,
+        log.input_hash,
+        log.output_hash,
+        log.duration_ms,
+        log.error_message,
+        log.rollback_of,
+        JSON.stringify(log.metadata)
+      );
+    } catch (error) {
+      throw new QueryError(
+        'Failed to append audit log entry',
+        this.insertStmt.source,
+        error instanceof Error ? error : undefined
+      );
+    }
+  }
+
+  /**
+   * Deserialize database row to AuditLog object
+   */
+  private deserialize(row: Record<string, unknown>): AuditLog {
+    return {
+      id: uuid(row.id as string),
+      timestamp: iso8601(row.timestamp as string),
+      event_type: row.event_type as AuditEventType,
+      actor_type: row.actor_type as ActorType,
+      actor_id: row.actor_id as string | null,
+      action_id: row.action_id ? uuid(row.action_id as string) : null,
+      operation: row.operation as string | null,
+      outcome: row.outcome as ActionOutcome,
+      input_hash: row.input_hash as string | null,
+      output_hash: row.output_hash as string | null,
+      duration_ms: row.duration_ms as number | null,
+      error_message: row.error_message as string | null,
+      rollback_of: row.rollback_of ? uuid(row.rollback_of as string) : null,
+      metadata: JSON.parse(row.metadata as string),
+    };
+  }
+}
