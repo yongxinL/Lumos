@@ -1,0 +1,239 @@
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  width: 90%;
+  max-width: 900px;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px;
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.header h2 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.closeButton {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: #666;
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+}
+
+.closeButton:hover {
+  background-color: #f0f0f0;
+  color: #000;
+}
+
+.content {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+.sidebar {
+  width: 200px;
+  border-right: 1px solid #e5e5e5;
+  padding: 16px;
+  overflow-y: auto;
+  background-color: #f9f9f9;
+}
+
+.sidebar h3 {
+  margin: 0 0 12px 0;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: #666;
+}
+
+.categoryList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.categoryButton {
+  width: 100%;
+  padding: 8px 12px;
+  background: none;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+  border-radius: 4px;
+  font-size: 14px;
+  color: #333;
+  margin-bottom: 4px;
+  transition: all 0.2s;
+}
+
+.categoryButton:hover {
+  background-color: #e8e8e8;
+}
+
+.categoryButton.active {
+  background-color: #007aff;
+  color: white;
+  font-weight: 500;
+}
+
+.shortcuts {
+  flex: 1;
+  padding: 20px 24px;
+  overflow-y: auto;
+}
+
+.shortcuts h3 {
+  margin: 0 0 16px 0;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.shortcutList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.shortcutItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  background-color: #f9f9f9;
+  border-radius: 6px;
+  border: 1px solid #e5e5e5;
+}
+
+.shortcutItem.conflicted {
+  border-color: #ff9500;
+  background-color: #fff8f0;
+}
+
+.description {
+  flex: 1;
+  font-size: 14px;
+  color: #333;
+}
+
+.keys {
+  display: flex;
+  gap: 6px;
+  margin-left: 16px;
+}
+
+.key {
+  padding: 4px 8px;
+  background-color: #ffffff;
+  border: 1px solid #d0d0d0;
+  border-radius: 4px;
+  font-family: 'Monaco', 'Menlo', monospace;
+  font-size: 12px;
+  color: #333;
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.1);
+  min-width: 24px;
+  text-align: center;
+}
+
+.conflictWarning {
+  font-size: 12px;
+  color: #ff9500;
+  font-weight: 500;
+  margin-left: 12px;
+}
+
+.empty {
+  color: #999;
+  font-style: italic;
+  padding: 20px;
+  text-align: center;
+}
+
+.conflictsSection {
+  margin-top: 24px;
+  padding-top: 24px;
+  border-top: 1px solid #e5e5e5;
+}
+
+.conflictsSection h4 {
+  margin: 0 0 12px 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: #ff9500;
+}
+
+.conflictsList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.conflictsList li {
+  padding: 8px 12px;
+  background-color: #fff8f0;
+  border-radius: 4px;
+  border-left: 3px solid #ff9500;
+  font-size: 13px;
+  color: #333;
+  margin-bottom: 8px;
+}
+
+.conflictsList code {
+  background-color: #f0f0f0;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-family: 'Monaco', 'Menlo', monospace;
+  font-size: 11px;
+}
+
+.footer {
+  padding: 16px 24px;
+  border-top: 1px solid #e5e5e5;
+  background-color: #f9f9f9;
+  font-size: 12px;
+  color: #666;
+}
+
+.footer p {
+  margin: 0;
+}
+
+.footer kbd {
+  padding: 2px 6px;
+  background-color: #ffffff;
+  border: 1px solid #d0d0d0;
+  border-radius: 3px;
+  font-family: 'Monaco', 'Menlo', monospace;
+  font-size: 11px;
+}

@@ -1,0 +1,26 @@
+declare const styles: {
+  container: string;
+  description: string;
+  category: string;
+  shortcutsList: string;
+  shortcutItem: string;
+  conflicted: string;
+  editing: string;
+  shortcutInfo: string;
+  meta: string;
+  platform: string;
+  conflict: string;
+  currentKeys: string;
+  recordingArea: string;
+  recordingState: string;
+  recordingIndicator: string;
+  previewKeys: string;
+  recordButton: string;
+  actions: string;
+  editButton: string;
+  saveButton: string;
+  resetButton: string;
+  cancelButton: string;
+  conflictsWarning: string;
+};
+export default styles;

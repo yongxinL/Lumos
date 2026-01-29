@@ -1,0 +1,24 @@
+declare const styles: {
+  modalOverlay: string;
+  modal: string;
+  header: string;
+  closeButton: string;
+  content: string;
+  sidebar: string;
+  categoryList: string;
+  categoryButton: string;
+  active: string;
+  shortcuts: string;
+  shortcutList: string;
+  shortcutItem: string;
+  conflicted: string;
+  description: string;
+  keys: string;
+  key: string;
+  conflictWarning: string;
+  empty: string;
+  conflictsSection: string;
+  conflictsList: string;
+  footer: string;
+};
+export default styles;
