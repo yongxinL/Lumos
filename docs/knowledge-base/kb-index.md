@@ -1,7 +1,7 @@
 # Knowledge Base Index
 
-**Version:** 1.0
-**Last Updated:** [Date of first entry]
+**Version:** 1.1
+**Last Updated:** 2026-01-29
 **Purpose:** Central index of organizational learning across all projects
 
 > **Usage:** This index provides quick access to failures, patterns, and decisions captured during development. Load this file instead of reading all KB entries for token efficiency.
@@ -12,28 +12,79 @@
 
 | Category | Count | Last Updated |
 |----------|-------|--------------|
-| Failures | 0 | - |
-| Patterns | 0 | - |
-| Decisions | 0 | - |
-| **Total** | **0** | - |
+| Failures | 1 | 2026-01-29 |
+| Patterns | 1 | 2026-01-29 |
+| Decisions | 1 | 2026-01-29 |
+| Instincts | 6 | 2026-01-29 |
+| **Total** | **9** | 2026-01-29 |
 
 ---
 
 ## Failures Index
 
-_No failure entries yet. Use `/kb add failure` to create your first entry._
+### F001: Electron/Node.js Version Documentation Error
+**Date:** 2026-01-29
+**Project:** Lumos
+**Severity:** High
+**Status:** Resolved
+
+**Summary:** Documentation incorrectly stated Electron 33 provides Node.js 22 (actually 20.18.0). Would have caused runtime incompatibility. Fixed by upgrading to Electron 39 (correct Node.js 22.20.0).
+
+**Key Lesson:** Always verify version claims with official sources before implementation.
+
+**File:** [failures/F001-electron-node-version-documentation-error.md](failures/F001-electron-node-version-documentation-error.md)
 
 ---
 
 ## Patterns Index
 
-_No pattern entries yet. Use `/kb add pattern` to create your first entry._
+### P001: Dependency Version Verification
+**Date:** 2026-01-29
+**Context:** Electron desktop app tech stack selection
+**Applicability:** Any project with complex dependency chains
+**Maturity:** Proven (1 successful application)
+
+**Summary:** Systematic multi-step process for verifying dependency versions against authoritative sources, checking ecosystem readiness, and validating compatibility chains.
+
+**Use When:** Selecting tech stack, auditing dependencies, or verifying documentation claims.
+
+**File:** [patterns/P001-dependency-version-verification.md](patterns/P001-dependency-version-verification.md)
 
 ---
 
 ## Decisions Index
 
-_No decision entries yet. Use `/kb add decision` to create your first entry._
+### D001: Lumos Tech Stack Version Selection (2026)
+**Date:** 2026-01-29
+**Project:** Lumos
+**Status:** Approved & Implemented
+
+**Summary:** Selected React 19.2.0 + Electron 39.0.0 with comprehensive updates to 24+ dependencies. Rejected outdated Electron 33 + React 18 stack after discovering documentation errors.
+
+**Key Outcomes:**
+- Modern, production-ready tech stack
+- React 19 stable for 13+ months
+- Correct Node.js 22 runtime via Electron 39
+- All dependencies verified and updated
+
+**File:** [decisions/D001-tech-stack-version-selection-2026.md](decisions/D001-tech-stack-version-selection-2026.md)
+
+---
+
+## Instincts Index
+
+### Session: Tech Stack Verification (2026-01-29)
+
+| Instinct | Confidence | Domain | Trigger |
+|----------|-----------|--------|---------|
+| [verify-electron-node-version](instincts/personal/verify-electron-node-version.md) | 0.9 | validation | When selecting Electron version |
+| [use-multi-source-verification](instincts/personal/use-multi-source-verification.md) | 0.8 | validation | When verifying version claims |
+| [validate-compatibility-chains](instincts/personal/validate-compatibility-chains.md) | 0.8 | validation | When using native dependencies |
+| [check-ecosystem-readiness](instincts/personal/check-ecosystem-readiness.md) | 0.7 | validation | When considering major updates |
+| [audit-all-when-one-wrong](instincts/personal/audit-all-when-one-wrong.md) | 0.7 | validation | When finding version errors |
+| [document-verification-sources](instincts/personal/document-verification-sources.md) | 0.7 | documentation | When making version claims |
+
+**Summary:** Learned from Electron 33→39 + React 18→19 upgrade session. All instincts reinforce verification-first approach to tech stack selection.
 
 ---
 
