@@ -11,4 +11,15 @@ declare global {
   }
 }
 
+// Re-export database types
+export type {
+  AuditLog,
+  Skill,
+  Policy,
+  TrustLevel,
+  ActionProposal,
+  MCPServer,
+  SchemaMigration,
+} from './database';
+
 export {};
