@@ -10,7 +10,11 @@ export * from './validation';
 
 // Handler registration functions
 export { registerSystemHandlers } from './system.handlers';
-export { registerInputHandlers } from './input.handlers';
+export {
+  registerInputHandlers,
+  initializeInputHandler,
+  cleanupInputHandler,
+} from './input.handlers';
 export { registerSkillHandlers } from './skills.handlers';
 export { registerProposalHandlers } from './proposals.handlers';
 

@@ -7,7 +7,7 @@
  * Design Decisions:
  * - Transcription preview allows user to confirm/edit before submission
  * - Streaming partial transcripts for real-time feedback
- * - Audio processing prepared for native Swift bridge (FluidAudio)
+ * - Audio processing via native Swift bridge (FluidAudio)
  * - Event emitter for UI updates
  */
 
@@ -19,15 +19,62 @@ import type {
   FastPathRoutingInput,
 } from '@/types';
 import { iso8601 } from '@/types';
+import { getSwiftBridge, SwiftBridge } from '../bridges/swift-bridge';
 
 export class InputHandler extends EventEmitter {
   private isRecording: boolean = false;
-  private currentTranscription: string = '';
   private recordingStartTime: number = 0;
   private recordingDuration: number = 0;
+  private swiftBridge: SwiftBridge | null = null;
+  private isInitialized: boolean = false;
 
   constructor() {
     super();
+  }
+
+  /**
+   * Initialize Swift bridge for audio recording
+   * Must be called before using audio features
+   */
+  public async initialize(): Promise<void> {
+    if (this.isInitialized) {
+      return;
+    }
+
+    try {
+      this.swiftBridge = getSwiftBridge();
+      await this.swiftBridge.start();
+
+      // Listen to Swift audio events
+      this.swiftBridge.on('recording_started', () => {
+        this.handleRecordingStarted();
+      });
+
+      this.swiftBridge.on('recording_stopped', (params: Record<string, unknown>) => {
+        const finalText = (params.final_text as string) || '';
+        this.handleRecordingStopped(finalText);
+      });
+
+      this.swiftBridge.on('recording_cancelled', () => {
+        this.handleRecordingCancelled();
+      });
+
+      this.isInitialized = true;
+    } catch (error) {
+      console.error('Failed to initialize Swift bridge:', error);
+      throw new Error('Failed to initialize audio recording');
+    }
+  }
+
+  /**
+   * Cleanup and stop Swift bridge
+   */
+  public async cleanup(): Promise<void> {
+    if (this.swiftBridge) {
+      await this.swiftBridge.stop();
+      this.swiftBridge = null;
+      this.isInitialized = false;
+    }
   }
 
   /**
@@ -58,57 +105,63 @@ export class InputHandler extends EventEmitter {
   /**
    * Start audio recording
    *
-   * Prepares recording state and emits state change event.
-   * Actual audio capture would be handled by native FluidAudio bridge.
+   * Delegates to Swift bridge for actual audio capture via FluidAudio.
    */
   public async startRecording(): Promise<void> {
+    if (!this.swiftBridge || !this.isInitialized) {
+      throw new Error('Swift bridge not initialized. Call initialize() first.');
+    }
+
     if (this.isRecording) {
       throw new Error('Recording already in progress');
     }
 
-    this.isRecording = true;
-    this.currentTranscription = '';
-    this.recordingStartTime = Date.now();
-    this.recordingDuration = 0;
+    try {
+      // Delegate to Swift bridge
+      await this.swiftBridge.startRecording();
 
-    const state: RecordingState = {
-      is_recording: true,
-      duration_ms: 0,
-      timestamp: iso8601(new Date().toISOString()),
-    };
-
-    this.emit('recording:state-change', state);
+      // Swift will send recording_started event, which will update state
+      this.recordingStartTime = Date.now();
+      this.recordingDuration = 0;
+    } catch (error) {
+      console.error('Failed to start recording:', error);
+      throw new Error('Failed to start audio recording');
+    }
   }
 
   /**
    * Stop recording and return transcription preview
    *
-   * In real implementation, this would get transcribed audio from FluidAudio bridge.
+   * Gets final transcription from Swift bridge (FluidAudio).
    */
   public async stopRecording(): Promise<TranscriptionPreview> {
+    if (!this.swiftBridge || !this.isInitialized) {
+      throw new Error('Swift bridge not initialized. Call initialize() first.');
+    }
+
     if (!this.isRecording) {
       throw new Error('No recording in progress');
     }
 
-    this.isRecording = false;
-    this.recordingDuration = Date.now() - this.recordingStartTime;
+    try {
+      // Delegate to Swift bridge
+      const result = await this.swiftBridge.stopRecording();
 
-    const state: RecordingState = {
-      is_recording: false,
-      duration_ms: this.recordingDuration,
-      timestamp: iso8601(new Date().toISOString()),
-    };
+      // Calculate duration
+      this.recordingDuration = Date.now() - this.recordingStartTime;
 
-    this.emit('recording:state-change', state);
-
-    // Return transcription preview
-    // In real implementation, transcription would come from FluidAudio/Ollama
-    return {
-      text: this.currentTranscription,
-      confidence: 0.85, // Placeholder - would come from STT service
-      language: 'en', // Placeholder
-      duration: this.recordingDuration,
-    };
+      // Swift will send recording_stopped event with final_text
+      // But we also return it directly here
+      return {
+        text: result.finalText,
+        confidence: 0.85, // FluidAudio doesn't expose confidence yet
+        language: 'en', // Assuming English for now
+        duration: this.recordingDuration,
+      };
+    } catch (error) {
+      console.error('Failed to stop recording:', error);
+      throw new Error('Failed to stop audio recording');
+    }
   }
 
   /**
@@ -142,31 +195,43 @@ export class InputHandler extends EventEmitter {
   /**
    * Cancel active transcription
    */
-  public cancelTranscription(): void {
+  public async cancelTranscription(): Promise<void> {
+    if (!this.swiftBridge || !this.isInitialized) {
+      throw new Error('Swift bridge not initialized. Call initialize() first.');
+    }
+
     if (this.isRecording) {
-      this.isRecording = false;
-      this.currentTranscription = '';
-      this.recordingDuration = 0;
+      try {
+        // Delegate to Swift bridge
+        await this.swiftBridge.cancelRecording();
 
-      const state: RecordingState = {
-        is_recording: false,
-        duration_ms: 0,
-        timestamp: iso8601(new Date().toISOString()),
-      };
+        // Swift will send recording_cancelled event, which will update state
+      } catch (error) {
+        console.error('Failed to cancel recording:', error);
+        // Still update local state even if Swift call fails
+        this.isRecording = false;
+        this.recordingDuration = 0;
 
-      this.emit('recording:state-change', state);
+        const state: RecordingState = {
+          is_recording: false,
+          duration_ms: 0,
+          timestamp: iso8601(new Date().toISOString()),
+        };
+
+        this.emit('recording:state-change', state);
+      }
     }
   }
 
   /**
    * Update partial transcription (for streaming real-time feedback)
    *
-   * In real implementation, this would be called by FluidAudio bridge
-   * as partial transcripts become available.
+   * Currently deferred due to Swift actor isolation challenges.
+   * TODO: Implement when FluidAudio provides non-actor-isolated access.
    */
   public updatePartialTranscription(partial: string): void {
     if (this.isRecording) {
-      this.currentTranscription = partial;
+      // TODO: Store partial transcription when real-time streaming is available
       this.emit('transcription:update', partial);
     }
   }
@@ -180,6 +245,61 @@ export class InputHandler extends EventEmitter {
       duration_ms: this.isRecording ? Date.now() - this.recordingStartTime : this.recordingDuration,
       timestamp: iso8601(new Date().toISOString()),
     };
+  }
+
+  /**
+   * Handle recording started event from Swift
+   */
+  private handleRecordingStarted(): void {
+    this.isRecording = true;
+
+    const state: RecordingState = {
+      is_recording: true,
+      duration_ms: 0,
+      timestamp: iso8601(new Date().toISOString()),
+    };
+
+    this.emit('recording:state-change', state);
+  }
+
+  /**
+   * Handle recording stopped event from Swift
+   */
+  private handleRecordingStopped(finalText: string): void {
+    this.isRecording = false;
+    this.recordingDuration = Date.now() - this.recordingStartTime;
+
+    const state: RecordingState = {
+      is_recording: false,
+      duration_ms: this.recordingDuration,
+      timestamp: iso8601(new Date().toISOString()),
+    };
+
+    this.emit('recording:state-change', state);
+
+    // Emit transcription complete event with final text
+    this.emit('transcription:complete', {
+      text: finalText,
+      confidence: 0.85,
+      language: 'en',
+      duration: this.recordingDuration,
+    });
+  }
+
+  /**
+   * Handle recording cancelled event from Swift
+   */
+  private handleRecordingCancelled(): void {
+    this.isRecording = false;
+    this.recordingDuration = 0;
+
+    const state: RecordingState = {
+      is_recording: false,
+      duration_ms: 0,
+      timestamp: iso8601(new Date().toISOString()),
+    };
+
+    this.emit('recording:state-change', state);
   }
 
   /**

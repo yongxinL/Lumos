@@ -10,7 +10,12 @@ import {
 } from 'electron';
 import path from 'path';
 import { autoUpdater } from 'electron-updater';
-import { registerAllIPCHandlers, initializeEventEmitter } from './ipc';
+import {
+  registerAllIPCHandlers,
+  initializeEventEmitter,
+  initializeInputHandler,
+  cleanupInputHandler,
+} from './ipc';
 
 const isDev = process.env.NODE_ENV === 'development';
 
@@ -100,9 +105,18 @@ function createWindow() {
  * AC-1.2.1.3: Application lifecycle handlers
  * AC-1.2.3.5: IPC handler registration in main process
  */
-app.on('ready', () => {
+app.on('ready', async () => {
   // Register IPC handlers before creating window
   registerAllIPCHandlers();
+
+  // Initialize InputHandler with Swift bridge
+  try {
+    await initializeInputHandler();
+    console.log('[Main] InputHandler initialized');
+  } catch (error) {
+    console.error('[Main] Failed to initialize InputHandler:', error);
+    // Continue app startup even if audio fails
+  }
 
   createWindow();
   setupMenu();
@@ -111,8 +125,9 @@ app.on('ready', () => {
   checkForUpdates();
 });
 
-app.on('window-all-closed', () => {
+app.on('window-all-closed', async () => {
   if (process.platform !== 'darwin') {
+    await cleanupInputHandler();
     app.quit();
   }
 });
@@ -322,6 +337,13 @@ ipcMain.on('restart-app', () => {
 
 ipcMain.on('error-log', (_event, errorData) => {
   console.error('Frontend Error:', JSON.stringify(errorData, null, 2));
+});
+
+// Cleanup before app quits
+app.on('before-quit', async (event) => {
+  event.preventDefault();
+  await cleanupInputHandler();
+  app.exit(0);
 });
 
 // Handle any uncaught exceptions

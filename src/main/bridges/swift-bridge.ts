@@ -175,6 +175,37 @@ export class SwiftBridge extends EventEmitter {
       return false;
     }
   }
+
+  // Audio recording methods
+  async startRecording(): Promise<void> {
+    const result = (await this.sendRequest('start_recording')) as { status?: string };
+    if (result?.status !== 'recording') {
+      throw new Error('Failed to start recording');
+    }
+  }
+
+  async stopRecording(): Promise<{ finalText: string }> {
+    const result = (await this.sendRequest('stop_recording')) as {
+      status?: string;
+      final_text?: string;
+    };
+    if (result?.status !== 'stopped') {
+      throw new Error('Failed to stop recording');
+    }
+    return { finalText: result.final_text || '' };
+  }
+
+  async cancelRecording(): Promise<void> {
+    const result = (await this.sendRequest('cancel_recording')) as { status?: string };
+    if (result?.status !== 'cancelled') {
+      throw new Error('Failed to cancel recording');
+    }
+  }
+
+  async getRecordingState(): Promise<{ isRecording: boolean }> {
+    const result = (await this.sendRequest('get_recording_state')) as { is_recording?: boolean };
+    return { isRecording: result?.is_recording || false };
+  }
 }
 
 // Singleton instance
