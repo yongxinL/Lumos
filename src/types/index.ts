@@ -147,6 +147,23 @@ export type {
 } from './input/input';
 
 // ============================================================================
+// AI Services types
+// ============================================================================
+
+export type {
+  OllamaConfig,
+  GenerateRequest,
+  GenerateResponse,
+  ModelOptions,
+  GenerateStreamChunk,
+  ModelInfo,
+  ModelDetails,
+  ListModelsResponse,
+  PullProgress,
+  HealthCheckResponse,
+} from './ai/ollama';
+
+// ============================================================================
 // IPC types (Inter-Process Communication)
 // ============================================================================
 

@@ -9,3 +9,16 @@ export { FastPathService, getFastPathService } from './fastPath';
 
 // Input Handler Service
 export { InputHandler, getInputHandler } from './inputHandler';
+
+// AI Services
+export {
+  OllamaClient,
+  getOllamaClient,
+  resetOllamaClient,
+  OllamaError,
+  OllamaConnectionError,
+  OllamaTimeoutError,
+  OllamaModelNotFoundError,
+  OllamaAPIError,
+  OllamaInvalidResponseError,
+} from './ai';
