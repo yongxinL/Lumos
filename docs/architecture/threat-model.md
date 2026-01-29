@@ -290,6 +290,14 @@ User Input → Fast Path → Evaluation LLM → Policy Engine → User Confirm �
 
 ---
 
-**Document Version:** 1.0
-**Last Updated:** 2026-01-28
-**Next Review:** Before Phase 3 implementation
+---
+
+## Version
+
+**Document Version:** 1.1
+**CodeMaestro:** v1.1.0
+**Last Updated:** 2026-01-29
+**Next Review:** Before Phase 3 implementation (Week 1)
+**Related Documents:**
+- [Blueprint v1.1](blueprint-v1.0.md) - Complete architecture
+- [Technology Stack v2.1](technology-stack.md) - Security-relevant technologies

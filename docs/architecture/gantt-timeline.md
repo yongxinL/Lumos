@@ -1,10 +1,24 @@
-# Implementation Timeline (Gantt Chart)
+# Project Timeline v1.1
 
 **Project:** Lumos - AI Work Assistant
-**Estimated Duration:** ~40 working days (8 weeks)
 **Start Date:** 2026-02-03
-**Target Completion:** 2026-04-03
-**Date:** 2026-01-28
+**Estimated End Date:** 2026-04-03
+**Total Duration:** 8 weeks
+**Estimated Tokens:** ~850K tokens
+**CodeMaestro Version:** 1.1.0
+
+---
+
+## Executive Summary
+
+| Metric | Value |
+|--------|-------|
+| Total Duration | 8 weeks (40 working days) |
+| Total Tasks | 53 tasks |
+| Parallel Groups | 15 groups |
+| Critical Path Duration | ~19 days (M4: Governance) |
+| Total Tokens | ~850K tokens |
+| Estimated Cost | ~$46.40 USD |
 
 ---
 
@@ -165,5 +179,44 @@ The timeline maximizes parallelization:
 - **M8 Release**: Mar 18 - Production-ready release
 
 ---
+
+## Resource Allocation
+
+| Week | Milestone | Focus | Parallel Tasks | Model Mix |
+|------|-----------|-------|----------------|-----------|
+| Week 1 | M1 | Infrastructure setup | PG-001, PG-002 (4 tasks) | Haiku x4, Sonnet x3 |
+| Week 2 | M2-M4 | Core services (parallel) | PG-003 (6 tasks) | Haiku x3, Sonnet x8 |
+| Week 3 | M3-M4 | AI & Governance | PG-004, PG-005 (4 tasks) | Sonnet x6, Opus x1 |
+| Week 4 | M5 | Execution layer | PG-006 (2 tasks) | Haiku x2, Sonnet x4 |
+| Week 5 | M6 | User interface | PG-007 (4 tasks) | Haiku x5, Sonnet x4 |
+| Week 6 | M7 | Integration & testing | PG-008, PG-009 (4 tasks) | Haiku x5, Sonnet x3 |
+| Week 7 | M8 | Release preparation | PG-010 (2 tasks) | Haiku x6 |
+
+---
+
+## Progress Tracking
+
+### Weekly Progress
+
+| Week | Planned Tasks | Completed | Tokens Used | On Track |
+|------|---------------|-----------|-------------|----------|
+| Week 1 | M1 (7 tasks) | - | 0K | ⏳ Not Started |
+| Week 2 | M2 (5 tasks), M3 (3 tasks), M4 (2 tasks) | - | 0K | ⏳ Not Started |
+| Week 3 | M3 (3 tasks), M4 (4 tasks) | - | 0K | ⏳ Not Started |
+| Week 4 | M5 (6 tasks) | - | 0K | ⏳ Not Started |
+| Week 5 | M6 (9 tasks) | - | 0K | ⏳ Not Started |
+| Week 6 | M7 (8 tasks) | - | 0K | ⏳ Not Started |
+| Week 7 | M8 (6 tasks) | - | 0K | ⏳ Not Started |
+| Week 8 | Buffer / Polish | - | 0K | ⏳ Not Started |
+
+---
+
+## Version
+
+| Field | Value |
+|-------|-------|
+| Timeline Version | 1.1 |
+| CodeMaestro Version | 1.1.0 |
+| Last Updated | 2026-01-29 |
 
 **Note:** This timeline is auto-generated from task estimates. Actual duration may vary based on technical discoveries and implementation complexity. Regular checkpoint reviews are recommended.

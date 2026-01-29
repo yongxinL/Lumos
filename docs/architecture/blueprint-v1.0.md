@@ -1,10 +1,22 @@
 # Engineering Blueprint v1.0
 
-**Project:** Lumos - AI Work Assistant for ServiceNow
+**Project:** Lumos - AI Work Assistant
 **Version:** 1.0
 **Date:** 2026-01-28
-**Phase:** 2 - Planning & Architecture
-**Author:** Software Architect (CodeMaestro v1.1.0)
+**Architect:** Software Architect (CodeMaestro v1.1.0)
+**CodeMaestro:** v1.1.0
+
+---
+
+## Meta
+
+| Field | Value |
+|-------|-------|
+| Domain | Desktop / AI/ML |
+| Pattern | Event-Driven Layered Architecture with Governance Pipeline |
+| Scale | Medium |
+| Team Size | 1-2 developers |
+| Skill Tier | Advanced |
 
 ---
 
@@ -80,7 +92,33 @@ Lumos is a **governed AI operating layer** for desktop productivity that:
 
 ---
 
-## 2. System Context Diagram
+## 2. Domain Adaptations
+
+**Detected Domain:** Desktop / AI/ML
+
+**Domain-Specific Patterns Applied:**
+
+### For Desktop:
+- [x] Native OS integration (macOS first)
+- [x] Local-first architecture with SQLite
+- [x] System-level permissions (Keychain, microphone)
+- [x] Application bundle distribution
+
+### For AI/ML:
+- [x] Dual-LLM architecture (local + cloud)
+- [x] Model serving infrastructure (Ollama integration)
+- [x] Training vs inference separation (local eval, cloud expert)
+- [x] Constrained output generation (JSON schema validation)
+
+**Domain-Specific Considerations:**
+- Desktop app requires code signing and notarization for macOS
+- AI governance requires deterministic policy engine (no LLM in critical path)
+- Local LLM performance depends on hardware (recommend 16GB+ RAM)
+- Cross-platform expansion (Windows) deferred to Phase 2
+
+---
+
+## 3. System Context Diagram
 
 ```mermaid
 C4Context
@@ -108,7 +146,7 @@ C4Context
 
 ---
 
-## 3. Component Diagram
+## 4. Component Diagram
 
 ```mermaid
 C4Component
@@ -139,9 +177,9 @@ C4Component
 
 ---
 
-## 4. Component Descriptions
+## 5. Component Descriptions
 
-### 4.1 Input Handler Service
+### 5.1 Input Handler Service
 
 **Responsibility:** Process text and audio input from user.
 
@@ -167,7 +205,7 @@ interface InputHandlerService {
 - Transcription preview allows user to confirm/edit before submission
 - Streaming partial transcripts for real-time feedback
 
-### 4.2 Fast Path Service
+### 5.2 Fast Path Service
 
 **Responsibility:** Classify input and route to appropriate processor.
 
@@ -195,7 +233,7 @@ interface FastPathResult {
 - Action patterns take priority over non-action patterns
 - Ambiguous input defaults to Evaluation LLM (fail-safe)
 
-### 4.3 Evaluation LLM Service
+### 5.3 Evaluation LLM Service
 
 **Responsibility:** Extract intent and generate structured action proposals.
 
@@ -221,7 +259,7 @@ interface EvaluationLLMService {
 - **Schema validation** - Double-check output against ActionProposal schema
 - **Low temperature** (0.1) - Consistent, deterministic outputs
 
-### 4.4 Policy Engine
+### 5.4 Policy Engine
 
 **Responsibility:** Deterministically evaluate proposals against skills and policies.
 
@@ -247,7 +285,7 @@ interface PolicyEngine {
 - **Fail-safe on crash** - Engine failure = deny action
 - **Constraint compilation** - Pre-compile TypeScript constraint expressions
 
-### 4.5 Expert AI Service
+### 5.5 Expert AI Service
 
 **Responsibility:** Complex reasoning, action planning, and response generation.
 
@@ -273,7 +311,7 @@ interface ExpertAIService {
 - **Model-agnostic interface** - Unified API across providers
 - **Fallback chain** - Local model as fallback if cloud unavailable
 
-### 4.6 Execution Layer
+### 5.6 Execution Layer
 
 **Responsibility:** Execute approved actions via MCP tools.
 
@@ -297,7 +335,7 @@ interface ExecutionLayer {
 - **Automatic rollback on failure** - Multi-step operations rolled back on error
 - **Capability-based security** - Tools restricted to declared capabilities
 
-### 4.7 Audit Service
+### 5.7 Audit Service
 
 **Responsibility:** Maintain append-only log of all significant events.
 
@@ -321,7 +359,7 @@ interface AuditService {
 - **Hash-based integrity** - Input hashes for privacy, content hashes for integrity
 - **Queryable interface** - Filters for UI and debugging
 
-### 4.8 Trust Management Service
+### 5.8 Trust Management Service
 
 **Responsibility:** Manage trust levels per operation type.
 
@@ -351,12 +389,13 @@ interface TrustManagementService {
 
 ---
 
-## 5. Architectural Decisions (ADRs)
+## 6. Architectural Decisions (ADRs)
 
 ### ADR-001: Dual-LLM Architecture
 
 **Status:** Accepted
 **Date:** 2026-01-28
+**Deciders:** Software Architect
 
 **Context:**
 We need AI capabilities for both intent extraction (proposals) and complex reasoning (expert assistance). These have different requirements for speed, accuracy, and governance.
@@ -372,10 +411,21 @@ Implement a dual-LLM architecture:
 - Separation allows different optimization strategies
 - Constrained JSON decoding ensures consistent proposal format
 
+**Competitive Context:**
+- **GitHub Copilot Approach:** Cloud-only models, no local option
+- **Continue.dev Approach:** Supports local models but no governance layer
+- **Our Differentiator:** Local-first with governance, privacy-focused
+- **Strategic Advantage:** GDPR/compliance friendly, works offline
+
 **Consequences:**
-- Requires Ollama installation for core functionality
-- Two AI pipelines to maintain
-- Clear governance boundary at proposal generation
+- **Positive:**
+  - Privacy-first approach appeals to enterprise users
+  - Offline capability differentiates from cloud-only solutions
+  - Clear governance boundary enables auditability
+- **Negative:**
+  - Requires Ollama installation (setup friction)
+  - Two AI pipelines to maintain
+  - **Mitigation:** Provide one-click Ollama installer
 
 ---
 
@@ -557,9 +607,9 @@ Implement three trust levels per operation type:
 
 ---
 
-## 6. Security Architecture
+## 7. Security Architecture
 
-### 6.1 Security Layers
+### 7.1 Security Layers
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
@@ -590,7 +640,9 @@ Implement three trust levels per operation type:
 └─────────────────────────────────────────────────────────────────┘
 ```
 
-### 6.2 Threat Model Summary
+### 7.2 Threat Model Summary
+
+**See:** [Threat Model](threat-model.md) for complete STRIDE analysis.
 
 | Threat | Mitigation |
 |--------|------------|
@@ -602,7 +654,7 @@ Implement three trust levels per operation type:
 | Session hijacking | Secure session tokens, expiry enforcement |
 | Skill definition tampering | Version hashing, signature verification (Phase 2) |
 
-### 6.3 Encryption Strategy
+### 7.3 Encryption Strategy
 
 **At Rest:**
 - SQLite database: Unencrypted (relies on macOS FileVault)
@@ -628,9 +680,9 @@ async function initializeEncryption(): Promise<void> {
 
 ---
 
-## 7. Data Architecture
+## 8. Data Architecture
 
-### 7.1 Data Flow
+### 8.1 Data Flow
 
 ```mermaid
 flowchart TD
@@ -684,7 +736,7 @@ flowchart TD
     Keychain --> ExecLayer
 ```
 
-### 7.2 Data Storage Strategy
+### 8.2 Data Storage Strategy
 
 | Data Type | Storage | Encryption | Retention |
 |-----------|---------|------------|-----------|
@@ -697,7 +749,7 @@ flowchart TD
 | API keys | macOS Keychain | OS-managed | User-controlled |
 | Session tokens | SQLite | No (short-lived) | Session duration |
 
-### 7.3 Schema Versioning
+### 8.3 Schema Versioning
 
 Database migrations handled via version tracking:
 
@@ -717,9 +769,9 @@ Migration strategy:
 
 ---
 
-## 8. Integration Points
+## 9. Integration Points
 
-### 8.1 FluidAudio Integration (macOS STT)
+### 9.1 FluidAudio Integration (macOS STT)
 
 **Architecture:**
 ```
@@ -747,7 +799,7 @@ Migration strategy:
 { type: 'error', code: 'MICROPHONE_DENIED', message: '...' }
 ```
 
-### 8.2 Ollama Integration
+### 9.2 Ollama Integration
 
 **Endpoint:** `http://localhost:11434/api/generate`
 
@@ -774,7 +826,7 @@ interface OllamaRequest {
 }
 ```
 
-### 8.3 MCP Server Integration
+### 9.3 MCP Server Integration
 
 **Phase 1 Servers:**
 
@@ -792,7 +844,7 @@ servers:
     skill_required: calendar-operations
 ```
 
-### 8.4 Cloud AI Providers (Optional)
+### 9.4 Cloud AI Providers (Optional)
 
 **Supported Providers:**
 - Claude (Anthropic API)
@@ -810,9 +862,9 @@ interface AIProvider {
 
 ---
 
-## 9. Scalability Design
+## 10. Scalability Design
 
-### 9.1 Performance Targets
+### 10.1 Performance Targets
 
 | Operation | Target | Strategy |
 |-----------|--------|----------|
@@ -822,7 +874,7 @@ interface AIProvider {
 | Transcription | <5s | Native Swift, streaming |
 | SQLite queries | <100ms | Indexes, prepared statements |
 
-### 9.2 Optimization Strategies
+### 10.2 Optimization Strategies
 
 **Policy Engine:**
 - Pre-compile TypeScript constraint expressions
@@ -840,7 +892,7 @@ interface AIProvider {
 - Optimistic UI for proposal display
 - Background skill sync
 
-### 9.3 Resource Limits
+### 10.3 Resource Limits
 
 ```typescript
 const RESOURCE_LIMITS = {
@@ -854,9 +906,9 @@ const RESOURCE_LIMITS = {
 
 ---
 
-## 10. Module Decomposition
+## 11. Module Decomposition
 
-### 10.1 Package Structure
+### 11.1 Package Structure
 
 ```
 src/
@@ -933,7 +985,7 @@ src/
     └── logger.ts                 # Logging
 ```
 
-### 10.2 Dependency Graph
+### 11.2 Dependency Graph
 
 ```mermaid
 graph TD
@@ -994,9 +1046,11 @@ graph TD
 
 ---
 
-## 11. Technology Stack
+## 12. Technology Stack
 
-### 11.1 Core Technologies
+**See:** [Technology Stack](technology-stack.md) for complete dependency matrix with versions and competitive edge analysis.
+
+### 12.1 Core Technologies
 
 | Layer | Technology | Version | Rationale |
 |-------|------------|---------|-----------|
@@ -1007,7 +1061,7 @@ graph TD
 | Local LLM | Ollama | Latest | Local inference, JSON mode |
 | STT | FluidAudio | Latest | macOS native, high quality |
 
-### 11.2 Key Dependencies
+### 12.2 Key Dependencies
 
 ```json
 {
@@ -1030,7 +1084,7 @@ graph TD
 }
 ```
 
-### 11.3 Build vs Integrate Decisions
+### 12.3 Build vs Integrate Decisions
 
 | Requirement | Decision | Rationale |
 |-------------|----------|-----------|
@@ -1045,9 +1099,9 @@ graph TD
 
 ---
 
-## 12. Deployment Architecture
+## 13. Deployment Architecture
 
-### 12.1 macOS Application Bundle
+### 13.1 macOS Application Bundle
 
 ```
 Lumos.app/
@@ -1064,7 +1118,7 @@ Lumos.app/
 │       └── Electron Framework.framework
 ```
 
-### 12.2 User Data Location
+### 13.2 User Data Location
 
 ```
 ~/Library/Application Support/AIWorkAssistant/
@@ -1080,7 +1134,7 @@ Lumos.app/
     └── mcp-servers.yaml
 ```
 
-### 12.3 Distribution
+### 13.3 Distribution
 
 - **Primary:** Direct download from website
 - **Code signing:** Apple Developer ID
@@ -1113,6 +1167,7 @@ Lumos.app/
 
 ---
 
-**Document Version:** 1.0
-**Last Updated:** 2026-01-28
-**Next Review:** After Phase 2 completion
+**Document Version:** 1.1
+**CodeMaestro:** v1.1.0
+**Last Updated:** 2026-01-29
+**Next Review:** After Phase 3 implementation
