@@ -1,7 +1,7 @@
 # Knowledge Base Index
 
-**Version:** 1.1
-**Last Updated:** 2026-01-29
+**Version:** 1.2
+**Last Updated:** 2026-01-30
 **Purpose:** Central index of organizational learning across all projects
 
 > **Usage:** This index provides quick access to failures, patterns, and decisions captured during development. Load this file instead of reading all KB entries for token efficiency.
@@ -16,8 +16,8 @@
 | Successes | 2      | 2026-01-29   |
 | Patterns  | 1      | 2026-01-29   |
 | Decisions | 3      | 2026-01-29   |
-| Instincts | 15     | 2026-01-29   |
-| **Total** | **23** | 2026-01-29   |
+| Instincts | 21     | 2026-01-30   |
+| **Total** | **29** | 2026-01-30   |
 
 ---
 
@@ -268,6 +268,19 @@
 | [defer-streaming-when-actor-isolated](instincts/technical/defer-streaming-when-actor-isolated.md) | 0.75       | Swift & Concurrency | When encountering actor-isolated AsyncSequence access errors |
 
 **Summary:** Learned from T-2.2.2 FluidAudio integration when StreamingAsrManager's `transcriptionUpdates` property was actor-isolated and inaccessible from Task closures. Instinct advocates for pragmatic workaround: defer real-time streaming features, implement final-result-only pattern, document as technical debt, and ship functional MVP. Avoids wasting time on complex actor isolation workarounds that may have better solutions in Swift 6.
+
+### Session 6: Constrained JSON Decoding & Advanced Validation (2026-01-30)
+
+| Instinct                                                                                            | Confidence | Domain                 | Trigger                                                      |
+| --------------------------------------------------------------------------------------------------- | ---------- | ---------------------- | ------------------------------------------------------------ |
+| [custom-ajv-keywords-cross-field](instincts/technical/custom-ajv-keywords-cross-field.md)           | 0.95       | Validation & Schemas   | When JSON Schema can't express cross-field dependencies      |
+| [multi-layer-validation-pipeline](instincts/technical/multi-layer-validation-pipeline.md)           | 0.95       | Architecture           | When validating LLM-generated JSON (production systems)      |
+| [schema-registry-ollama-compatibility](instincts/technical/schema-registry-ollama-compatibility.md) | 0.95       | LLM Integration        | When using Ollama constrained decoding with custom keywords  |
+| [semantic-rules-auto-correction](instincts/technical/semantic-rules-auto-correction.md)             | 0.95       | Validation & Business  | When LLM output violates business rules with known fixes     |
+| [validation-hooks-extensibility](instincts/technical/validation-hooks-extensibility.md)             | 0.95       | Architecture & Plugins | When validation pipeline needs extensibility                 |
+| [typescript-strict-ajv-keywords](instincts/technical/typescript-strict-ajv-keywords.md)             | 0.95       | TypeScript & Types     | When AJV custom keywords cause TypeScript strict mode errors |
+
+**Summary:** Learned from T-3.1.3 Constrained JSON Decoding implementation. All instincts reinforce production-grade validation architecture: multi-layer pipelines (parse → schema → semantic → hooks), custom AJV keywords for complex rules, schema registries for Ollama compatibility, semantic validation with auto-correction, hook-based extensibility, and TypeScript workarounds for AJV's complex types. These patterns enable robust validation of LLM-generated JSON while maintaining extensibility and debuggability.
 
 ---
 
