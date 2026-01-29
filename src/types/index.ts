@@ -6,25 +6,6 @@
  */
 
 // ============================================================================
-// Global definitions
-// ============================================================================
-
-export interface ElectronAPI {
-  send: (channel: string, data: unknown) => void;
-  receive: (channel: string, func: (...args: unknown[]) => void) => void;
-  getAppVersion: () => Promise<{ version: string }>;
-  onNavigate: (handler: (path: string) => void) => void;
-  onNewChat: (handler: () => void) => void;
-  onCommandPalette: (handler: () => void) => void;
-}
-
-declare global {
-  interface Window {
-    electron: ElectronAPI;
-  }
-}
-
-// ============================================================================
 // Common types and branded types
 // ============================================================================
 
@@ -159,6 +140,41 @@ export type {
   FastPathResult,
   InputValidation,
 } from './input/input';
+
+// ============================================================================
+// IPC types (Inter-Process Communication)
+// ============================================================================
+
+export type {
+  // Core IPC types
+  IPCRequest,
+  IPCResponse,
+  IPCError,
+  IPCEvent,
+  IPCChannel,
+  IPCEventType,
+  // Payload mappings
+  IPCChannelPayloads,
+  IPCChannelResponses,
+  IPCEventPayloads,
+  // Supporting types (non-duplicate IPC-specific types)
+  TranscriptionPreview,
+  InputSubmissionResult,
+  InputState,
+  SkillListQuery,
+  PolicyEvaluationRequest,
+  PolicyEvaluationResult,
+  TrustDemotionRequest,
+  AttestationStatus,
+  ProposalHistoryQuery,
+  AuditQueryRequest,
+  AuditExportRequest,
+  AuditStatsQuery,
+  AuditStats,
+  MCPToolCallRequest,
+  SystemInfo,
+  UpdateInfo,
+} from './ipc';
 
 // ============================================================================
 // Type guards

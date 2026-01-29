@@ -10,6 +10,7 @@ import {
 } from 'electron';
 import path from 'path';
 import { autoUpdater } from 'electron-updater';
+import { registerAllIPCHandlers, initializeEventEmitter } from './ipc';
 
 const isDev = process.env.NODE_ENV === 'development';
 
@@ -64,6 +65,12 @@ function createWindow() {
   // Show window when ready
   mainWindow.once('ready-to-show', () => {
     mainWindow?.show();
+
+    // Initialize IPC event emitter
+    if (mainWindow) {
+      initializeEventEmitter(mainWindow);
+      console.log('[IPC] Event emitter initialized');
+    }
   });
 
   // AC-1.2.1.3: Application lifecycle handlers
@@ -91,8 +98,12 @@ function createWindow() {
 
 /**
  * AC-1.2.1.3: Application lifecycle handlers
+ * AC-1.2.3.5: IPC handler registration in main process
  */
 app.on('ready', () => {
+  // Register IPC handlers before creating window
+  registerAllIPCHandlers();
+
   createWindow();
   setupMenu();
   registerGlobalShortcuts();
