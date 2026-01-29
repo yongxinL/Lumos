@@ -16,8 +16,8 @@
 | Successes | 2      | 2026-01-29   |
 | Patterns  | 1      | 2026-01-29   |
 | Decisions | 3      | 2026-01-29   |
-| Instincts | 14     | 2026-01-29   |
-| **Total** | **22** | 2026-01-29   |
+| Instincts | 15     | 2026-01-29   |
+| **Total** | **23** | 2026-01-29   |
 
 ---
 
@@ -260,6 +260,14 @@
 | [restage-after-lint-fixes](instincts/technical/restage-after-lint-fixes.md)                                       | 0.95       | Git & Workflow     | After fixing lint errors from pre-commit hooks   |
 
 **Summary:** Learned from T-1.2.3 IPC bridge implementation. First instinct prevents race conditions by initializing event emitter after window is fully ready. Second instinct prevents "duplicate identifier" errors by using dedicated .d.ts files for global declarations. Third instinct prevents repeated commit failures by re-staging files after fixing lint errors (lint-staged checks staged version, not working directory).
+
+### Session 5: Swift Concurrency & FluidAudio Integration (2026-01-29)
+
+| Instinct                                                                                          | Confidence | Domain              | Trigger                                                      |
+| ------------------------------------------------------------------------------------------------- | ---------- | ------------------- | ------------------------------------------------------------ |
+| [defer-streaming-when-actor-isolated](instincts/technical/defer-streaming-when-actor-isolated.md) | 0.75       | Swift & Concurrency | When encountering actor-isolated AsyncSequence access errors |
+
+**Summary:** Learned from T-2.2.2 FluidAudio integration when StreamingAsrManager's `transcriptionUpdates` property was actor-isolated and inaccessible from Task closures. Instinct advocates for pragmatic workaround: defer real-time streaming features, implement final-result-only pattern, document as technical debt, and ship functional MVP. Avoids wasting time on complex actor isolation workarounds that may have better solutions in Swift 6.
 
 ---
 

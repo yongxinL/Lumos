@@ -4,6 +4,12 @@ class MessageHandler {
     private let encoder = JSONEncoder()
     private let decoder = JSONDecoder()
     private var running = true
+    private var audioHandler: AudioHandler?
+
+    init() {
+        // Initialize AudioHandler with reference to self
+        audioHandler = AudioHandler(messageHandler: self)
+    }
 
     func start() {
         // Setup signal handlers
@@ -78,8 +84,62 @@ class MessageHandler {
                 "status": "healthy",
                 "uptime": ProcessInfo.processInfo.systemUptime
             ])
+        case "start_recording":
+            handleStartRecording(id: message.id)
+        case "stop_recording":
+            handleStopRecording(id: message.id)
+        case "cancel_recording":
+            handleCancelRecording(id: message.id)
+        case "get_recording_state":
+            handleGetRecordingState(id: message.id)
         default:
             sendError(id: message.id, code: "METHOD_NOT_FOUND", message: "Unknown method: \(method)")
+        }
+    }
+
+    // MARK: - Audio Handler Methods
+
+    private func handleStartRecording(id: String) {
+        Task {
+            do {
+                try await audioHandler?.startRecording()
+                sendResponse(id: id, result: ["status": "recording"])
+            } catch let error as AudioHandlerError {
+                sendError(id: id, code: "AUDIO_ERROR", message: error.localizedDescription)
+            } catch {
+                sendError(id: id, code: "UNKNOWN_ERROR", message: error.localizedDescription)
+            }
+        }
+    }
+
+    private func handleStopRecording(id: String) {
+        Task {
+            do {
+                let finalText = try await audioHandler?.stopRecording() ?? ""
+                sendResponse(id: id, result: [
+                    "status": "stopped",
+                    "final_text": finalText
+                ])
+            } catch let error as AudioHandlerError {
+                sendError(id: id, code: "AUDIO_ERROR", message: error.localizedDescription)
+            } catch {
+                sendError(id: id, code: "UNKNOWN_ERROR", message: error.localizedDescription)
+            }
+        }
+    }
+
+    private func handleCancelRecording(id: String) {
+        Task {
+            await audioHandler?.cancelRecording()
+            sendResponse(id: id, result: ["status": "cancelled"])
+        }
+    }
+
+    private func handleGetRecordingState(id: String) {
+        if let state = audioHandler?.getRecordingState() {
+            sendResponse(id: id, result: state)
+        } else {
+            sendError(id: id, code: "AUDIO_ERROR", message: "AudioHandler not initialized")
         }
     }
 

@@ -4,7 +4,7 @@ import PackageDescription
 let package = Package(
     name: "LumosHelper",
     platforms: [
-        .macOS(.v13)
+        .macOS(.v14)
     ],
     products: [
         .executable(
@@ -13,12 +13,18 @@ let package = Package(
         )
     ],
     dependencies: [
-        // FluidAudio will be added in T-2.2.2
+        .package(url: "https://github.com/FluidInference/FluidAudio.git", from: "0.7.9")
     ],
     targets: [
         .executableTarget(
             name: "LumosHelper",
-            dependencies: []
+            dependencies: [
+                .product(name: "FluidAudio", package: "FluidAudio")
+            ],
+            swiftSettings: [
+                .unsafeFlags(["-Xfrontend", "-disable-availability-checking"]),
+                .unsafeFlags(["-Xfrontend", "-warn-concurrency"])
+            ]
         ),
         .testTarget(
             name: "LumosHelperTests",
