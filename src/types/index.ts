@@ -174,6 +174,19 @@ export type {
   ProviderHealthCheck,
 } from './ai/provider';
 
+export type {
+  Message,
+  Conversation,
+  ExpertAIConfig,
+  ExpertResponse,
+  ActionStep,
+  ActionPlan,
+  RollbackPlanWithMetadata,
+  ModelOption,
+  ProcessedInput as ExpertProcessedInput,
+  ExecutedActionData,
+} from './ai/expertAi';
+
 // ============================================================================
 // IPC types (Inter-Process Communication)
 // ============================================================================

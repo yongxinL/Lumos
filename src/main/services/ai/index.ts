@@ -102,3 +102,16 @@ export {
   resetProviderRegistry,
   createDefaultOllamaProvider,
 } from './providers';
+
+// Expert AI Service
+export { ExpertAIService, getExpertAiService, resetExpertAiService } from './expertAiService';
+export {
+  ExpertAIError,
+  NoProviderAvailableError,
+  ProviderNotFoundError as ExpertProviderNotFoundError,
+  ProviderUnhealthyError,
+  ConversationNotFoundError,
+  ContextSizeExceededError,
+  GenerationError,
+  ParsingError,
+} from './expertAiErrors';

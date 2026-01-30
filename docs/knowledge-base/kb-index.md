@@ -16,8 +16,8 @@
 | Successes | 2      | 2026-01-29   |
 | Patterns  | 1      | 2026-01-29   |
 | Decisions | 3      | 2026-01-29   |
-| Instincts | 29     | 2026-01-30   |
-| **Total** | **37** | 2026-01-30   |
+| Instincts | 34     | 2026-01-30   |
+| **Total** | **42** | 2026-01-30   |
 
 ---
 
@@ -296,6 +296,18 @@
 | [test-mocking-third-party](instincts/technical/test-mocking-third-party.md)                       | 0.95       | Testing      | When testing wrapper classes with third-party dependencies  |
 
 **Summary:** Learned from T-3.2.1 AI Provider Interface implementation. All instincts focus on building production-grade abstraction layers: handling type collisions through direct imports, casting through 'unknown' for incompatible types, understanding API simplifications, designing provider abstractions with capabilities descriptors, managing providers with registry pattern, forwarding events in wrappers, using conditional type exports, and mocking third-party clients effectively. These patterns enable clean multi-backend architectures while maintaining type safety.
+
+### Session 8: Expert AI Service (2026-01-30)
+
+| Instinct                                                                                                      | Confidence | Domain             | Trigger                                                     |
+| ------------------------------------------------------------------------------------------------------------- | ---------- | ------------------ | ----------------------------------------------------------- |
+| [type-alias-conflicts-barrel-exports](instincts/technical/type-alias-conflicts-barrel-exports.md)             | 0.95       | Type System        | When multiple modules export same type name                 |
+| [timestamp-type-casting-provider-responses](instincts/technical/timestamp-type-casting-provider-responses.md) | 0.90       | Type System        | When integrating providers with branded timestamp types     |
+| [event-driven-service-pattern](instincts/technical/event-driven-service-pattern.md)                           | 0.95       | Architecture       | When building services with loose coupling requirements     |
+| [context-pruning-strategy](instincts/technical/context-pruning-strategy.md)                                   | 0.90       | AI & LLM           | When managing multi-turn conversation context               |
+| [json-parsing-graceful-fallbacks](instincts/technical/json-parsing-graceful-fallbacks.md)                     | 0.95       | AI & Error Handlin | When parsing AI-generated JSON with validation requirements |
+
+**Summary:** Learned from T-3.2.2 Expert AI Service implementation. All instincts focus on building robust multi-turn conversation systems: handling type alias conflicts in barrel exports, casting timestamps at provider boundaries, using event-driven patterns for loose coupling, pruning conversation context efficiently, and parsing AI-generated JSON with graceful error handling. These patterns enable reliable Expert AI services with provider flexibility.
 
 ---
 
